@@ -38,7 +38,7 @@ const Dashboard = () => {
         .from('enrollments')
         .select(`
                 *,
-                course:courses(*),
+                course:courses(id, title, image_url),
                 certificate:certificates(id)
             `)
         .eq('user_id', profile?.id) // Profile ID matches Auth ID
@@ -46,7 +46,8 @@ const Dashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!profile?.id
+    enabled: !!profile?.id,
+    staleTime: 1000 * 60 * 5 // 5 minutes
   });
 
   const { data: favorites, isLoading: favoritesLoading } = useQuery({
@@ -55,12 +56,13 @@ const Dashboard = () => {
       if (!profile?.id) return [];
       return await courseService.getStudentFavorites(profile.id);
     },
-    enabled: !!profile?.id
+    enabled: !!profile?.id,
+    staleTime: 1000 * 60 * 5 // 5 minutes
   });
 
-  if (loading || bookingsLoading) {
-    return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin mr-2" /> Cargando...</div>;
-  }
+  // if (loading || bookingsLoading) { // Removed blocking loader
+  //   return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin mr-2" /> Cargando...</div>;
+  // }
 
   // Derived Stats
   const activeCourses = enrollments?.filter(e => e.status === 'active' && e.progress < 100) || [];
@@ -160,42 +162,50 @@ const Dashboard = () => {
                     <PlayCircle className="w-5 h-5 text-primary" />
                     En Progreso
                   </h3>
-                  {!activeCourses.length && (
-                    <p className="text-muted-foreground text-sm">No tienes cursos en progreso.</p>
+                  {bookingsLoading ? (
+                    <div className="flex items-center justify-center p-12">
+                      <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                    </div>
+                  ) : (
+                    <>
+                      {!activeCourses.length && (
+                        <p className="text-muted-foreground text-sm">No tienes cursos en progreso.</p>
+                      )}
+                      <div className="grid md:grid-cols-2 gap-6">
+                        {activeCourses.map((enrollment: any) => (
+                          <Card key={enrollment.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 border-border group">
+                            <div className="aspect-video relative overflow-hidden">
+                              <img
+                                src={enrollment.course?.image_url || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60"}
+                                alt={enrollment.course?.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Button className="rounded-full" onClick={() => navigate(`/classroom/${enrollment.course_id}`)}>Continuar Aprendiendo</Button>
+                              </div>
+                            </div>
+                            <CardContent className="p-6">
+                              <div className="flex justify-between items-start mb-4">
+                                <div>
+                                  <Badge variant={enrollment.status === 'pending' ? 'secondary' : 'default'} className="mb-2">
+                                    {enrollment.status === 'pending' ? 'Pendiente Pago' : 'Activo'}
+                                  </Badge>
+                                  <h4 className="font-bold line-clamp-1">{enrollment.course?.title}</h4>
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-muted-foreground">Progreso</span>
+                                  <span className="font-medium">{enrollment.progress || 0}%</span>
+                                </div>
+                                <Progress value={enrollment.progress || 0} className="h-2" />
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </>
                   )}
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {activeCourses.map((enrollment: any) => (
-                      <Card key={enrollment.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 border-border group">
-                        <div className="aspect-video relative overflow-hidden">
-                          <img
-                            src={enrollment.course?.image_url || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60"}
-                            alt={enrollment.course?.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button className="rounded-full" onClick={() => navigate(`/classroom/${enrollment.course_id}`)}>Continuar Aprendiendo</Button>
-                          </div>
-                        </div>
-                        <CardContent className="p-6">
-                          <div className="flex justify-between items-start mb-4">
-                            <div>
-                              <Badge variant={enrollment.status === 'pending' ? 'secondary' : 'default'} className="mb-2">
-                                {enrollment.status === 'pending' ? 'Pendiente Pago' : 'Activo'}
-                              </Badge>
-                              <h4 className="font-bold line-clamp-1">{enrollment.course?.title}</h4>
-                            </div>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">Progreso</span>
-                              <span className="font-medium">{enrollment.progress || 0}%</span>
-                            </div>
-                            <Progress value={enrollment.progress || 0} className="h-2" />
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
                 </div>
 
                 {/* Completed Courses */}
@@ -204,62 +214,70 @@ const Dashboard = () => {
                     <CheckCircle className="w-5 h-5 text-green-500" />
                     Completados
                   </h3>
-                  {!completedCourses.length && (
-                    <p className="text-muted-foreground text-sm">No has completado ningún curso aún.</p>
+                  {bookingsLoading ? (
+                    <div className="flex items-center justify-center p-8">
+                      <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
+                    </div>
+                  ) : (
+                    <>
+                      {!completedCourses.length && (
+                        <p className="text-muted-foreground text-sm">No has completado ningún curso aún.</p>
+                      )}
+                      <div className="grid md:grid-cols-2 gap-6">
+                        {completedCourses.map((enrollment: any) => (
+                          <Card key={enrollment.id} className="flex flex-row overflow-hidden border-border">
+                            <div className="w-32 relative">
+                              <img
+                                src={enrollment.course?.image_url || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60"}
+                                alt={enrollment.course?.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="p-4 flex-1 flex flex-col justify-center">
+                              <h4 className="font-bold text-sm mb-1">{enrollment.course?.title}</h4>
+                              <p className="text-xs text-muted-foreground mb-3">
+                                {enrollment.purchased_at ? format(new Date(enrollment.purchased_at), "dd MMM yyyy", { locale: es }) : "Completado"}
+                              </p>
+                              <div className="flex gap-2 flex-wrap">
+                                <Button variant="secondary" size="sm" className="h-7 text-xs" onClick={() => navigate(`/classroom/${enrollment.course_id}`)}>
+                                  Ver Contenido
+                                </Button>
+                                {(enrollment.certificate && (Array.isArray(enrollment.certificate) ? enrollment.certificate.length > 0 : true)) && (
+                                  <>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="h-7 text-xs text-green-600 border-green-200 bg-green-50 hover:bg-green-100"
+                                      onClick={() => {
+                                        const certId = Array.isArray(enrollment.certificate) ? enrollment.certificate[0].id : enrollment.certificate.id;
+                                        navigate(`/verify/${certId}`);
+                                      }}
+                                    >
+                                      <Award className="w-3 h-3 mr-1" />
+                                      Ver Digital
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="h-7 text-xs text-blue-600 border-blue-200 bg-blue-50 hover:bg-blue-100"
+                                      onClick={() => {
+                                        const message = `Hola Gerencia y Desarrollo Global, quisiera solicitar el certificado físico del curso: ${enrollment.course?.title}. Mis datos son: ${profile?.full_name} (DNI: ${profile?.dni})`;
+                                        const whatsappNumber = settings?.payment_number?.replace(/\D/g, '') || "51953181829";
+                                        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+                                      }}
+                                    >
+                                      <Award className="w-3 h-3 mr-1" />
+                                      Solicitar Físico
+                                    </Button>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </>
                   )}
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {completedCourses.map((enrollment: any) => (
-                      <Card key={enrollment.id} className="flex flex-row overflow-hidden border-border">
-                        <div className="w-32 relative">
-                          <img
-                            src={enrollment.course?.image_url || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60"}
-                            alt={enrollment.course?.title}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="p-4 flex-1 flex flex-col justify-center">
-                          <h4 className="font-bold text-sm mb-1">{enrollment.course?.title}</h4>
-                          <p className="text-xs text-muted-foreground mb-3">
-                            {enrollment.purchased_at ? format(new Date(enrollment.purchased_at), "dd MMM yyyy", { locale: es }) : "Completado"}
-                          </p>
-                          <div className="flex gap-2 flex-wrap">
-                            <Button variant="secondary" size="sm" className="h-7 text-xs" onClick={() => navigate(`/classroom/${enrollment.course_id}`)}>
-                              Ver Contenido
-                            </Button>
-                            {(enrollment.certificate && (Array.isArray(enrollment.certificate) ? enrollment.certificate.length > 0 : true)) && (
-                              <>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-7 text-xs text-green-600 border-green-200 bg-green-50 hover:bg-green-100"
-                                  onClick={() => {
-                                    const certId = Array.isArray(enrollment.certificate) ? enrollment.certificate[0].id : enrollment.certificate.id;
-                                    navigate(`/verify/${certId}`);
-                                  }}
-                                >
-                                  <Award className="w-3 h-3 mr-1" />
-                                  Ver Digital
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-7 text-xs text-blue-600 border-blue-200 bg-blue-50 hover:bg-blue-100"
-                                  onClick={() => {
-                                    const message = `Hola Gerencia y Desarrollo Global, quisiera solicitar el certificado físico del curso: ${enrollment.course?.title}. Mis datos son: ${profile?.full_name} (DNI: ${profile?.dni})`;
-                                    const whatsappNumber = settings?.payment_number?.replace(/\D/g, '') || "51953181829";
-                                    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
-                                  }}
-                                >
-                                  <Award className="w-3 h-3 mr-1" />
-                                  Solicitar Físico
-                                </Button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
                 </div>
               </TabsContent>
 

@@ -127,7 +127,7 @@ const CursoDetalle = () => {
     );
   }
 
-  const duration = course.metadata?.find((m: any) => m.key.match(/duraci[oó]n/i))?.value || course.duration || "A tu ritmo";
+  const duration = course.duration || course.metadata?.find((m: any) => m.key.match(/duraci[oó]n/i))?.value || "A tu ritmo";
 
 
 

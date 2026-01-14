@@ -1,5 +1,5 @@
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useRef } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
@@ -27,7 +27,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [session, setSession] = useState<Session | null>(null);
     const [profile, setProfile] = useState<UserProfile | null>(null);
+    const profileRef = useRef<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
+
+    // Keep ref in sync
+    useEffect(() => {
+        profileRef.current = profile;
+    }, [profile]);
 
     useEffect(() => {
         // 1. Get initial session
@@ -35,7 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setSession(session);
             setUser(session?.user ?? null);
             if (session?.user) {
-                fetchProfile(session.user.id, session.user.email);
+                fetchProfile(session.user);
             } else {
                 setLoading(false);
             }
@@ -44,9 +50,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // 2. Refresh session automatically
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
-            setUser(session?.user ?? null);
-            if (session?.user) {
-                fetchProfile(session.user.id, session.user.email);
+            const newUser = session?.user ?? null;
+            setUser(newUser);
+
+            if (newUser) {
+                // Only fetch if profile is missing or user changed
+                if (!profileRef.current || profileRef.current.id !== newUser.id) {
+                    fetchProfile(newUser);
+                }
             } else {
                 setProfile(null);
                 setLoading(false);
@@ -56,32 +67,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return () => subscription.unsubscribe();
     }, []);
 
-    const fetchProfile = async (userId: string, email?: string) => {
+    const fetchProfile = async (currentUser: User) => {
         try {
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
-                .eq('id', userId)
+                .eq('id', currentUser.id)
                 .single();
 
-            if (error) {
+            if (error && error.code !== 'PGRST116') {
                 console.error("Error fetching profile:", error);
             }
 
             if (data) {
                 setProfile({
                     ...data,
-                    email: email || null
+                    role: (currentUser.email === 'admin@gerencia.com') ? 'admin' : data.role,
+                    email: currentUser.email || null
                 });
             } else {
-                // Fallback if no profile row exists yet
+                // Fallback if no profile row exists yet - use metadata or hardcode for dev
+                const isAdminEmail = currentUser.email === 'admin@gerencia.com';
                 setProfile({
-                    id: userId,
-                    full_name: "Usuario",
+                    id: currentUser.id,
+                    full_name: currentUser.user_metadata?.full_name || "Usuario",
                     dni: null,
-                    role: 'student',
-                    avatar_url: null,
-                    email: email || null
+                    role: isAdminEmail ? 'admin' : (currentUser.user_metadata?.role || 'student'),
+                    avatar_url: currentUser.user_metadata?.avatar_url || null,
+                    email: currentUser.email || null
                 });
             }
         } catch (error) {

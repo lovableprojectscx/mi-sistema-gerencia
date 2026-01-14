@@ -16,6 +16,7 @@ export interface Course {
     slug: string;
     instructor_id?: string;
     modality?: 'live' | 'async' | 'hybrid';
+    duration?: string;
     metadata?: any; // JSONB
     students?: number;
     modules?: Module[];

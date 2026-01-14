@@ -177,21 +177,20 @@ export const Navbar = () => {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {profile?.role === 'admin' ? (
+                    {profile?.role === 'admin' && (
                       <DropdownMenuItem asChild>
                         <Link to="/admin">
                           <LayoutDashboard className="mr-2 h-4 w-4" />
                           Admin Dashboard
                         </Link>
                       </DropdownMenuItem>
-                    ) : (
-                      <DropdownMenuItem asChild>
-                        <Link to="/dashboard">
-                          <LayoutDashboard className="mr-2 h-4 w-4" />
-                          Mi Aprendizaje
-                        </Link>
-                      </DropdownMenuItem>
                     )}
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        Mi Aprendizaje
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => signOut()}>
                       <LogOut className="mr-2 h-4 w-4" />
