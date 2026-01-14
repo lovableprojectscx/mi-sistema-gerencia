@@ -1,0 +1,395 @@
+
+import { supabase } from "@/lib/supabase";
+
+export interface Course {
+    id: string;
+    title: string;
+    subtitle?: string;
+    description?: string;
+    price: number;
+    original_price?: number;
+    image_url?: string;
+    level: string;
+    category: string;
+    specialty?: string;
+    published: boolean;
+    slug: string;
+    instructor_id?: string;
+}
+
+export interface Module {
+    id: string;
+    course_id: string;
+    title: string;
+    order: number;
+    lessons?: Lesson[];
+}
+
+export interface Lesson {
+    id: string;
+    module_id: string;
+    title: string;
+    type: 'video' | 'pdf' | 'quiz';
+    content_url?: string;
+    duration?: string;
+    order: number;
+    is_free_preview: boolean;
+}
+
+export interface Instructor {
+    id: string;
+    name: string;
+    title: string;
+    bio?: string;
+    avatar_url?: string;
+    linkedin_url?: string;
+}
+
+export const courseService = {
+    // --- Courses ---
+    async getAll() {
+        const { data, error } = await supabase
+            .from('courses')
+            .select('*, instructor:instructors(name), enrollments(user_id)')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data.map(mapCourseWithStudentCount);
+    },
+
+    async getRelatedCourses(currentCourseId: string, category: string, limit = 3) {
+        const { data, error } = await supabase
+            .from('courses')
+            .select('*, instructor:instructors(name), enrollments(user_id)')
+            .eq('category', category)
+            .eq('published', true)
+            .neq('id', currentCourseId)
+            .limit(limit);
+
+        if (error) throw error;
+        return data.map(mapCourseWithStudentCount);
+    },
+
+    async getById(id: string) {
+        const { data, error } = await supabase
+            .from('courses')
+            .select(`
+            *,
+            instructor:instructors!instructor_id (*),
+            modules (
+                *,
+                lessons (*)
+            ),
+            enrollments(user_id)
+        `)
+            .eq('id', id)
+            .single();
+
+        if (error) throw error;
+
+        // Sort modules and lessons by order
+        if (data.modules) {
+            data.modules.sort((a: any, b: any) => a.order - b.order);
+            data.modules.forEach((mod: any) => {
+                if (mod.lessons) {
+                    mod.lessons.sort((a: any, b: any) => a.order - b.order);
+                }
+            });
+        }
+
+        return mapCourseWithStudentCount(data);
+    },
+
+    async create(course: Partial<Course>) {
+        // Generate slug from title if not provided
+        const slug = course.slug || course.title?.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+
+        // Sanitize payload: remove derived/joined fields that don't exist in 'courses' table
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { students, instructor, modules, enrollments, ...cleanCourse } = course as any;
+
+        const { data, error } = await supabase
+            .from('courses')
+            .insert([{ ...cleanCourse, slug }])
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    },
+
+    async update(id: string, updates: Partial<Course>) {
+        // Sanitize payload
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { students, instructor, modules, enrollments, ...cleanUpdates } = updates as any;
+
+        const { data, error } = await supabase
+            .from('courses')
+            .update(cleanUpdates)
+            .eq('id', id)
+            .select()
+            .single();
+
+
+        if (error) throw error;
+        return data;
+    },
+
+    async delete(id: string) {
+        // Soft delete: Archive the course instead of deleting it
+        const { error } = await supabase
+            .from('courses')
+            .update({ is_archived: true })
+            .eq('id', id);
+        if (error) throw error;
+    },
+
+    // --- Instructors ---
+    async getInstructors() {
+        const { data, error } = await supabase
+            .from('instructors')
+            .select('*')
+            .order('name');
+        if (error) throw error;
+        if (error) throw error;
+        return data;
+    },
+
+
+
+    async createInstructor(instructor: Partial<Instructor>) {
+        const { data, error } = await supabase
+            .from('instructors')
+            .insert([instructor])
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    },
+
+    async deleteInstructor(id: string) {
+        const { error } = await supabase.from('instructors').delete().eq('id', id);
+        if (error) throw error;
+    },
+
+    // --- Modules ---
+    async createModule(moduleId: Partial<Module>) {
+        const { data, error } = await supabase
+            .from('modules')
+            .insert([moduleId])
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    },
+
+    async updateModule(id: string, updates: Partial<Module>) {
+        const { data, error } = await supabase
+            .from('modules')
+            .update(updates)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    },
+
+    async deleteModule(id: string) {
+        const { error } = await supabase.from('modules').delete().eq('id', id);
+        if (error) throw error;
+    },
+
+    // --- Lessons ---
+    async createLesson(lesson: Partial<Lesson>) {
+        const { data, error } = await supabase
+            .from('lessons')
+            .insert([lesson])
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    },
+
+    async updateLesson(id: string, updates: Partial<Lesson>) {
+        const { data, error } = await supabase
+            .from('lessons')
+            .update(updates)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    },
+
+    async deleteLesson(id: string) {
+        const { error } = await supabase.from('lessons').delete().eq('id', id);
+        if (error) throw error;
+    },
+
+    // --- Progress & Completions ---
+    async toggleLessonCompletion(userId: string, courseId: string, lessonId: string, completed: boolean) {
+        if (completed) {
+            const { error } = await supabase
+                .from('lesson_completions')
+                .insert([{ user_id: userId, lesson_id: lessonId }]);
+            if (error && error.code !== '23505') throw error; // Ignore duplicate key errors
+        } else {
+            const { error } = await supabase
+                .from('lesson_completions')
+                .delete()
+                .match({ user_id: userId, lesson_id: lessonId });
+            if (error) throw error;
+        }
+
+        // --- Recalculate Progress ---
+
+        // 1. Get all lesson IDs for this course
+        const { data: course, error: courseError } = await supabase
+            .from('courses')
+            .select(`
+                modules (
+                    lessons (id)
+                )
+            `)
+            .eq('id', courseId)
+            .single();
+
+        if (courseError || !course) {
+            console.error("Error recalculating progress: course not found", courseError);
+            return;
+        }
+
+        const allLessonIds = course.modules?.flatMap((m: any) => m.lessons?.map((l: any) => l.id)) || [];
+        const totalLessons = allLessonIds.length;
+
+        if (totalLessons === 0) return;
+
+        // 2. Count completed lessons for this user within this course
+        const { count, error: countError } = await supabase
+            .from('lesson_completions')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId)
+            .in('lesson_id', allLessonIds);
+
+        if (countError) {
+            console.error("Error recalculating progress: count failed", countError);
+            return;
+        }
+
+        const progress = Math.round(((count || 0) / totalLessons) * 100);
+
+        // 3. Update Enrollment
+        // Note: We use course_id and user_id to find the enrollment
+        await supabase
+            .from('enrollments')
+            .update({ progress: progress })
+            .eq('user_id', userId)
+            .eq('course_id', courseId);
+    },
+
+    async getLessonCompletions(userId: string, courseId: string) {
+        // We need to filter by course, but completions table only has lesson_id.
+        // We can join or just fetch all for user (simple for now) or fetch strictly for the lessons in this course.
+        // For MVP, fetching all for this user is fine, or we can use a join.
+
+        const { data, error } = await supabase
+            .from('lesson_completions')
+            .select('lesson_id')
+            .eq('user_id', userId);
+
+        if (error) throw error;
+        return data.map(r => r.lesson_id);
+    },
+
+    // --- Enrollments & Certificates ---
+    async approveEnrollment(id: string) {
+        // 1. Get enrollment details to know user and course
+        const { data: enrollment, error: fetchError } = await supabase.from('enrollments').select('*').eq('id', id).single();
+        if (fetchError || !enrollment) throw fetchError || new Error("Enrollment not found");
+
+        // 2. Update status
+        const { error: updateError } = await supabase.from('enrollments').update({ status: 'active' }).eq('id', id);
+        if (updateError) throw updateError;
+
+        // 3. Create Certificate if not exists - REMOVED LEGACY LOGIC
+        // Certificates should be generated via generateCertificate() RPC to ensure correct metadata and logic.
+        // This function just activates the enrollment access.
+    },
+
+    async rejectEnrollment(id: string) {
+        const { error } = await supabase
+            .from('enrollments')
+            .update({ status: 'rejected' })
+            .eq('id', id);
+        if (error) throw error;
+    },
+
+    async generateCertificate(enrollmentId: string, additionalMetadata: any = {}) {
+        // Use the secure RPC function to generate certificate
+        const { data, error } = await supabase.rpc('generate_certificate_v2', {
+            p_enrollment_id: enrollmentId,
+            p_preferences: additionalMetadata
+        });
+
+        if (error) throw error;
+        return data;
+    },
+
+    // --- Favorites ---
+    async toggleFavorite(userId: string, courseId: string, isFavorite: boolean) {
+        if (isFavorite) {
+            // Remove
+            const { error } = await supabase
+                .from('favorites')
+                .delete()
+                .match({ user_id: userId, course_id: courseId });
+            if (error) throw error;
+        } else {
+            // Add
+            const { error } = await supabase
+                .from('favorites')
+                .insert({ user_id: userId, course_id: courseId });
+            if (error) throw error;
+        }
+    },
+
+    async getFavoriteStatus(userId: string, courseId: string) {
+        const { data, error } = await supabase
+            .from('favorites')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('course_id', courseId)
+            .maybeSingle();
+
+        if (error) throw error;
+        return !!data;
+    },
+
+    async getStudentFavorites(userId: string) {
+        const { data, error } = await supabase
+            .from('favorites')
+            .select(`
+                course_id,
+                course:courses (*, enrollments(user_id))
+            `)
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        // Transform to return just courses with student count
+        return data.map((f: any) => mapCourseWithStudentCount(f.course));
+    }
+};
+
+const mapCourseWithStudentCount = (course: any) => {
+    if (!course) return course;
+    // Count unique user_ids in enrollments to avoid duplicates if any (though PK/UK usually prevents it)
+    const uniqueStudents = new Set(course.enrollments?.map((e: any) => e.user_id)).size;
+
+    // Remove enrollments from the object to clean it up, and add students count
+    const { enrollments, ...rest } = course;
+    return {
+        ...rest,
+        students: uniqueStudents
+    };
+};
