@@ -92,7 +92,7 @@ export default function Checkout() {
                 .select('id')
                 .eq('user_id', user.id)
                 .eq('course_id', courseId)
-                .single();
+                .maybeSingle();
 
             if (existing) {
                 toast.info("Ya tienes una solicitud para este curso");

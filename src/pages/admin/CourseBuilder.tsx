@@ -20,9 +20,7 @@ import {
     X,
     XCircle,
     AlertCircle,
-    Pencil,
-    Sparkles,
-    Wand2
+    Pencil
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { CertificateBuilder } from "@/components/admin/CertificateBuilder";
@@ -109,34 +107,7 @@ export default function CourseBuilder() {
     const [descriptorUrl, setDescriptorUrl] = useState(""); // Content URL
     const [descriptorDuration, setDescriptorDuration] = useState(""); // Duration
 
-    // AI Magic State
-    const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
-    const handleGenerateAI = async () => {
-        if (!course.title) {
-            toast.error("Ingresa un título primero para generar la descripción");
-            return;
-        }
-        setIsGeneratingAI(true);
-        toast.info("Consultando a la IA...", { duration: 2000 });
-
-        // Mock AI delay
-        setTimeout(() => {
-            const definitions = [
-                "Aprende desde cero a dominar",
-                "Conviértete en un experto en",
-                "Descubre las estrategias avanzadas de",
-                "Domina las herramientas clave para"
-            ];
-            const randStart = definitions[Math.floor(Math.random() * definitions.length)];
-
-            const generated = `${randStart} ${course.title}. \n\nEn este curso integral, exploraremos los fundamentos y técnicas más efectivas para llevar tus habilidades al siguiente nivel. Diseñado tanto para principiantes como para profesionales, este programa te guiará paso a paso a través de casos prácticos y teoría aplicada.\n\nLo que aprenderás:\n✅ Fundamentos sólidos y mejores prácticas.\n✅ Estrategias aplicables al mundo real.\n✅ Herramientas y tecnologías modernas.\n\n¡Inscríbete ahora y transforma tu carrera profesional!`;
-
-            setCourse(prev => ({ ...prev, description: generated }));
-            setIsGeneratingAI(false);
-            toast.success("¡Descripción mejorada con IA!");
-        }, 2000);
-    };
 
     const openCreateModuleDialog = () => {
         setModuleDialogMode('create');
@@ -486,16 +457,7 @@ export default function CourseBuilder() {
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center">
                                         <Label htmlFor="desc" className="flex gap-1">Descripción Completa <span className="text-destructive">*</span></Label>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="h-6 text-xs text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50"
-                                            onClick={handleGenerateAI}
-                                            disabled={isGeneratingAI}
-                                        >
-                                            {isGeneratingAI ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Wand2 className="w-3 h-3 mr-1" />}
-                                            {isGeneratingAI ? "Generando..." : "Mejorar con IA"}
-                                        </Button>
+
                                     </div>
                                     <Textarea
                                         id="desc"

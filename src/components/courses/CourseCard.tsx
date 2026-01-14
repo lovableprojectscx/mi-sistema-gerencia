@@ -18,6 +18,7 @@ interface CourseCardProps {
   category: string;
   specialty?: string;
   level: string;
+  programType?: string;
 }
 
 const categoryColors: Record<string, string> = {

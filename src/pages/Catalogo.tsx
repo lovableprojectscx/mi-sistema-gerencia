@@ -37,7 +37,7 @@ const areas = [
 
 const modalities = [
   { id: "live", label: "En Vivo" },
-  { id: "recorded", label: "Autoestudio" },
+  { id: "async", label: "Autoestudio" },
 ];
 
 const programTypes = [
@@ -111,14 +111,18 @@ const Catalogo = () => {
         }
       }
 
-      // Modality filter (Assuming 'level' as proxy or needing a new field, for now ignoring or using level/type)
-      // Since modality isn't in DB schema yet, we skip or use what we have. 
-      // Let's assume all are 'recorded' or check if we added that field. 
-      // Schema has: level, category. No specific 'modality'. 
-      // We will skip modality filter for DB data to avoid empty results until schema update.
+      // Modality filter
+      if (selectedModalities.length > 0) {
+        // Map 'recorded' UI filter to 'async' DB value if needed, or just use 'async' in the filter definition
+        // We will update the filter definition constant to match DB ('async' instead of 'recorded')
+        if (!selectedModalities.includes(course.modality || 'async')) {
+          return false;
+        }
+      }
 
       // Price filter
-      if (course.price > maxPrice) {
+      const coursePrice = typeof course.price === 'number' ? course.price : parseFloat(course.price || '0');
+      if (coursePrice > maxPrice) {
         return false;
       }
       return true;
@@ -127,10 +131,10 @@ const Catalogo = () => {
     // Sort
     switch (sortBy) {
       case "price-low":
-        result.sort((a: any, b: any) => a.price - b.price);
+        result.sort((a: any, b: any) => (a.price || 0) - (b.price || 0));
         break;
       case "price-high":
-        result.sort((a: any, b: any) => b.price - a.price);
+        result.sort((a: any, b: any) => (b.price || 0) - (a.price || 0));
         break;
       case "newest":
       default:

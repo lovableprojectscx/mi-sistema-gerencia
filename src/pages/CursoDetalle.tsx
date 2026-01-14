@@ -130,9 +130,7 @@ const CursoDetalle = () => {
   const duration = course.metadata?.find((m: any) => m.key.match(/duraci[oó]n/i))?.value || course.duration || "A tu ritmo";
 
 
-  if (!course) {
-    return <div className="min-h-screen bg-background flex items-center justify-center">Curso no encontrado</div>;
-  }
+
 
   // Transform course data if needed (e.g. if modules are not joined correctly yet, but service handles checks)
   // For now assuming service returns standard structure.

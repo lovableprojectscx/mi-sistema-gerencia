@@ -15,6 +15,11 @@ export interface Course {
     published: boolean;
     slug: string;
     instructor_id?: string;
+    modality?: 'live' | 'async' | 'hybrid';
+    metadata?: any; // JSONB
+    students?: number;
+    modules?: Module[];
+    instructor?: Instructor;
 }
 
 export interface Module {
@@ -54,7 +59,8 @@ export const courseService = {
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-        return data.map(mapCourseWithStudentCount);
+        // Cast data to Course[] usually requires assertion with Supabase unless generics are perfect
+        return (data as unknown as Course[]).map(mapCourseWithStudentCount);
     },
 
     async getRelatedCourses(currentCourseId: string, category: string, limit = 3) {
@@ -67,7 +73,7 @@ export const courseService = {
             .limit(limit);
 
         if (error) throw error;
-        return data.map(mapCourseWithStudentCount);
+        return (data as unknown as Course[]).map(mapCourseWithStudentCount);
     },
 
     async getById(id: string) {
@@ -88,16 +94,17 @@ export const courseService = {
         if (error) throw error;
 
         // Sort modules and lessons by order
-        if (data.modules) {
-            data.modules.sort((a: any, b: any) => a.order - b.order);
-            data.modules.forEach((mod: any) => {
+        const courseData = data as unknown as Course & { modules: Module[] };
+        if (courseData.modules) {
+            courseData.modules.sort((a, b) => a.order - b.order);
+            courseData.modules.forEach((mod) => {
                 if (mod.lessons) {
-                    mod.lessons.sort((a: any, b: any) => a.order - b.order);
+                    mod.lessons.sort((a, b) => a.order - b.order);
                 }
             });
         }
 
-        return mapCourseWithStudentCount(data);
+        return mapCourseWithStudentCount(courseData);
     },
 
     async create(course: Partial<Course>) {
@@ -106,33 +113,47 @@ export const courseService = {
 
         // Sanitize payload: remove derived/joined fields that don't exist in 'courses' table
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { students, instructor, modules, enrollments, ...cleanCourse } = course as any;
+        const { students, instructor_id, ...courseData } = course;
+        // Note: we can't destructure strict types easily if they aren't there, but 'modules' etc aren't in Partial<Course> usually
+        // if we stick to the interface. However, if 'course' comes from a form with extra props, we need to be careful.
+        // We will assume input is Partial<Course> which shouldn't have 'modules' or 'enrollments' if strict.
+        // But to be safe against UI objects:
+        const payload = {
+            ...courseData,
+            slug
+        } as any; // Temporary cast for dynamic delete if needed, or better:
+        delete payload.modules;
+        delete payload.enrollments;
+        delete payload.instructor; // if explicitly populated
 
         const { data, error } = await supabase
             .from('courses')
-            .insert([{ ...cleanCourse, slug }])
+            .insert([payload])
             .select()
             .single();
 
         if (error) throw error;
-        return data;
+        return data as Course;
     },
 
     async update(id: string, updates: Partial<Course>) {
         // Sanitize payload
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { students, instructor, modules, enrollments, ...cleanUpdates } = updates as any;
+        const payload = { ...updates } as any;
+        delete payload.modules;
+        delete payload.enrollments;
+        delete payload.instructor;
+        delete payload.students;
 
         const { data, error } = await supabase
             .from('courses')
-            .update(cleanUpdates)
+            .update(payload)
             .eq('id', id)
             .select()
             .single();
 
 
         if (error) throw error;
-        return data;
+        return data as Course;
     },
 
     async delete(id: string) {
@@ -151,7 +172,7 @@ export const courseService = {
             .select('*')
             .order('name');
         if (error) throw error;
-        if (error) throw error;
+
         return data;
     },
 
@@ -259,7 +280,8 @@ export const courseService = {
             return;
         }
 
-        const allLessonIds = course.modules?.flatMap((m: any) => m.lessons?.map((l: any) => l.id)) || [];
+        const courseData = course as unknown as Course & { modules: Module[] };
+        const allLessonIds = courseData.modules?.flatMap((m) => m.lessons?.map((l) => l.id)) || [];
         const totalLessons = allLessonIds.length;
 
         if (totalLessons === 0) return;
@@ -288,14 +310,32 @@ export const courseService = {
     },
 
     async getLessonCompletions(userId: string, courseId: string) {
-        // We need to filter by course, but completions table only has lesson_id.
-        // We can join or just fetch all for user (simple for now) or fetch strictly for the lessons in this course.
-        // For MVP, fetching all for this user is fine, or we can use a join.
+        // 1. Get all lesson IDs for this course first to ensure we don't fetch failures or other courses
+        const { data: course, error: courseError } = await supabase
+            .from('courses')
+            .select(`
+                modules (
+                    lessons (id)
+                )
+            `)
+            .eq('id', courseId)
+            .single();
+
+        if (courseError || !course) {
+            // If course not found or error, return empty valid list
+            return [];
+        }
+
+        const courseData = course as unknown as Course & { modules: Module[] };
+        const allLessonIds = courseData.modules?.flatMap((m) => m.lessons?.map((l) => l.id)) || [];
+
+        if (allLessonIds.length === 0) return [];
 
         const { data, error } = await supabase
             .from('lesson_completions')
             .select('lesson_id')
-            .eq('user_id', userId);
+            .eq('user_id', userId)
+            .in('lesson_id', allLessonIds);
 
         if (error) throw error;
         return data.map(r => r.lesson_id);
@@ -381,15 +421,16 @@ export const courseService = {
     }
 };
 
-const mapCourseWithStudentCount = (course: any) => {
+const mapCourseWithStudentCount = (course: any): Course & { students: number } => {
     if (!course) return course;
     // Count unique user_ids in enrollments to avoid duplicates if any (though PK/UK usually prevents it)
-    const uniqueStudents = new Set(course.enrollments?.map((e: any) => e.user_id)).size;
+    const enrollments = course.enrollments as { user_id: string }[] | undefined;
+    const uniqueStudents = new Set(enrollments?.map((e) => e.user_id)).size;
 
     // Remove enrollments from the object to clean it up, and add students count
-    const { enrollments, ...rest } = course;
+    const { enrollments: _, ...rest } = course;
     return {
         ...rest,
         students: uniqueStudents
-    };
+    } as Course & { students: number };
 };

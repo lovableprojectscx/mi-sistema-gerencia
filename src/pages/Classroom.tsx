@@ -71,10 +71,10 @@ export default function Classroom() {
         queryFn: async () => {
             if (!userId) return null;
             // Get enrollment first
-            const { data: enrol } = await supabase.from('enrollments').select('id').eq('user_id', userId).eq('course_id', courseId).single();
+            const { data: enrol } = await supabase.from('enrollments').select('id').eq('user_id', userId).eq('course_id', courseId).maybeSingle();
             if (!enrol) return null;
             // Get certificate
-            const { data: cert } = await supabase.from('certificates').select('id').eq('enrollment_id', enrol.id).single();
+            const { data: cert } = await supabase.from('certificates').select('id').eq('enrollment_id', enrol.id).maybeSingle();
             return cert;
         },
         enabled: !!userId && !!courseId
@@ -432,7 +432,7 @@ export default function Classroom() {
                         <Button onClick={async () => {
                             setIsGenerating(true);
                             try {
-                                const { data: enrol } = await supabase.from('enrollments').select('id').eq('user_id', userId).eq('course_id', courseId).single();
+                                const { data: enrol } = await supabase.from('enrollments').select('id').eq('user_id', userId).eq('course_id', courseId).maybeSingle();
                                 if (enrol) {
                                     const liveUrl = course.metadata?.find((m: any) => m.key === "live_url")?.value;
 

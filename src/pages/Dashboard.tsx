@@ -17,11 +17,13 @@ import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { courseService } from "@/services/courseService";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const Dashboard = () => {
   const { profile, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("courses");
+  const { settings } = useSiteSettings();
 
   const handleLogout = async () => {
     await signOut();
@@ -244,7 +246,8 @@ const Dashboard = () => {
                                   className="h-7 text-xs text-blue-600 border-blue-200 bg-blue-50 hover:bg-blue-100"
                                   onClick={() => {
                                     const message = `Hola Gerencia y Desarrollo Global, quisiera solicitar el certificado físico del curso: ${enrollment.course?.title}. Mis datos son: ${profile?.full_name} (DNI: ${profile?.dni})`;
-                                    window.open(`https://wa.me/51953181829?text=${encodeURIComponent(message)}`, '_blank');
+                                    const whatsappNumber = settings?.payment_number?.replace(/\D/g, '') || "51953181829";
+                                    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
                                   }}
                                 >
                                   <Award className="w-3 h-3 mr-1" />
@@ -295,7 +298,8 @@ const Dashboard = () => {
                                   className="w-full border-blue-200 text-blue-700 hover:bg-blue-50"
                                   onClick={() => {
                                     const message = `Hola Gerencia y Desarrollo Global, quisiera solicitar el certificado físico del curso: ${enrollment.course?.title}. Mis datos son: ${profile?.full_name} (DNI: ${profile?.dni})`;
-                                    window.open(`https://wa.me/51953181829?text=${encodeURIComponent(message)}`, '_blank');
+                                    const whatsappNumber = settings?.payment_number?.replace(/\D/g, '') || "51953181829";
+                                    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
                                   }}
                                 >
                                   <Award className="w-4 h-4 mr-2" />

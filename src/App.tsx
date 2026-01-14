@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
 
@@ -47,56 +47,54 @@ const App = () => {
         <AuthProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <ScrollToTop /> {/* Add here inside Router */}
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Index />} />
-              <Route path="/catalogo" element={<Catalogo />} />
-              <Route path="/nosotros" element={<Nosotros />} />
-              <Route path="/verificar" element={<Verificar />} />
-              <Route path="/faq" element={<FAQ />} />
+          <ScrollToTop /> {/* Add here inside Router */}
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Index />} />
+            <Route path="/catalogo" element={<Catalogo />} />
+            <Route path="/nosotros" element={<Nosotros />} />
+            <Route path="/verificar" element={<Verificar />} />
+            <Route path="/faq" element={<FAQ />} />
 
-              <Route path="/curso/:id" element={<CursoDetalle />} />
-              <Route path="/verify/:id" element={<CertificateViewer />} />
+            <Route path="/curso/:id" element={<CursoDetalle />} />
+            <Route path="/verify/:id" element={<CertificateViewer />} />
 
-              {/* Auth Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
+            {/* Auth Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
-              {/* Protected Student Routes */}
-              <Route element={<ProtectedRoute />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/classroom/:courseId" element={<Classroom />} />
-                <Route path="/checkout/:courseId" element={<Checkout />} />
-                <Route path="/checkout/success" element={<PaymentSuccess />} />
-                <Route path="/profile/edit" element={<EditProfile />} />
-                <Route path="/instructor/:id" element={<InstructorProfile />} />
-                <Route path="/certificate/:id" element={<CertificateViewer />} />
+            {/* Protected Student Routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/classroom/:courseId" element={<Classroom />} />
+              <Route path="/checkout/:courseId" element={<Checkout />} />
+              <Route path="/checkout/success" element={<PaymentSuccess />} />
+              <Route path="/profile/edit" element={<EditProfile />} />
+              <Route path="/instructor/:id" element={<InstructorProfile />} />
+              <Route path="/certificate/:id" element={<CertificateViewer />} />
+            </Route>
+
+            {/* Protected Admin Routes */}
+            <Route element={<ProtectedRoute requireAdmin={true} />}>
+              <Route path="/admin" element={<AdminLayout><Outlet /></AdminLayout>}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="courses" element={<AdminCourses />} />
+                <Route path="sales" element={<AdminEnrollments />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="settings" element={<AdminSettings />} />
+                <Route path="courses/new" element={<CourseBuilder />} />
+                <Route path="courses/:id" element={<CourseBuilder />} />
               </Route>
+            </Route>
 
-              {/* Protected Admin Routes */}
-              <Route element={<ProtectedRoute requireAdmin={true} />}>
-                <Route path="/admin" element={<AdminLayout><Outlet /></AdminLayout>}>
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="courses" element={<AdminCourses />} />
-                  <Route path="sales" element={<AdminEnrollments />} />
-                  <Route path="users" element={<AdminUsers />} />
-                  <Route path="settings" element={<AdminSettings />} />
-                  <Route path="courses/new" element={<CourseBuilder />} />
-                  <Route path="courses/:id" element={<CourseBuilder />} />
-                </Route>
-              </Route>
-
-              {/* Catch-all */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+            {/* Catch-all */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </AuthProvider>
       </TooltipProvider>
-    </QueryClientProvider>
+    </QueryClientProvider >
   );
 };
 

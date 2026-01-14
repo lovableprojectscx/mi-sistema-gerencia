@@ -21,7 +21,7 @@ export function useSiteSettings() {
             const { data, error } = await supabase
                 .from('site_settings')
                 .select('*')
-                .single();
+                .maybeSingle();
 
             if (error) throw error;
             setSettings(data);

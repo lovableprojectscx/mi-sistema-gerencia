@@ -50,12 +50,6 @@ const services = [
   { icon: GraduationCap, title: "Talleres prácticos" },
 ];
 
-const stats = [
-  { value: 5000, label: "Estudiantes certificados", suffix: "+" },
-  { value: 120, label: "Cursos disponibles", suffix: "+" },
-  { value: 50, label: "Docentes expertos", suffix: "+" },
-  { value: 98, label: "Satisfacción", suffix: "%" },
-];
 
 const Counter = ({ value, suffix }: { value: number; suffix: string }) => {
   const ref = useRef(null);
@@ -82,7 +76,41 @@ const Counter = ({ value, suffix }: { value: number; suffix: string }) => {
   );
 };
 
+import { supabase } from "@/lib/supabase";
+
 const Nosotros = () => {
+  const [stats, setStats] = useState([
+    { value: 0, label: "Estudiantes certificados", suffix: "+" },
+    { value: 0, label: "Cursos disponibles", suffix: "+" },
+    { value: 0, label: "Docentes expertos", suffix: "+" },
+    { value: 98, label: "Satisfacción", suffix: "%" },
+  ]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // Count courses
+        const { count: courseCount } = await supabase.from('courses').select('*', { count: 'exact', head: true });
+
+        // Count instructors
+        const { count: instructorCount } = await supabase.from('instructors').select('*', { count: 'exact', head: true });
+
+        // Count enrollments (as proxy for students/certificates for now)
+        const { count: studentCount } = await supabase.from('enrollments').select('*', { count: 'exact', head: true });
+
+        setStats([
+          { value: studentCount || 0, label: "Estudiantes inscritos", suffix: "+" },
+          { value: courseCount || 0, label: "Cursos disponibles", suffix: "+" },
+          { value: instructorCount || 0, label: "Docentes expertos", suffix: "+" },
+          { value: 98, label: "Satisfacción", suffix: "%" },
+        ]);
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      }
+    };
+    fetchStats();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-accent/20">
       <Navbar />

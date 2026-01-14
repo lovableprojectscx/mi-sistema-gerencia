@@ -8,34 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
 // Mock certificate data (REMOVED)
-const mockCertificates: Record<string, {
-  valid: boolean;
-  studentName: string;
-  courseTitle: string;
-  issueDate: string;
-  hours: number;
-  credentialId: string;
-  grade: string;
-}> = {
-  "75412389": {
-    valid: true,
-    studentName: "Juan Pérez Martínez",
-    courseTitle: "Gestión Pública y Modernización del Estado",
-    issueDate: "15 de Diciembre de 2025",
-    hours: 120,
-    credentialId: "GDG-2025-GP-001234",
-    grade: "Excelencia Académica",
-  },
-  "41852963": {
-    valid: true,
-    studentName: "María Elena Torres Gutiérrez",
-    courseTitle: "Nutrición Clínica y Dietoterapia Hospitalaria",
-    issueDate: "28 de Noviembre de 2025",
-    hours: 70,
-    credentialId: "GDG-2025-NC-005678",
-    grade: "Aprobado",
-  },
-};
+// Mock data removed in favor of real database queries
 
 const Verificar = () => {
   const navigate = useNavigate();
