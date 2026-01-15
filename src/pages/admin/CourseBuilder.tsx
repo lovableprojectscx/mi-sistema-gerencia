@@ -824,8 +824,8 @@ export default function CourseBuilder() {
                                     <div className="space-y-2">
                                         <Label>Especialidad</Label>
                                         <Select
-                                            value={formData.instructor_id}
-                                            onValueChange={(value) => handleInputChange("instructor_id", value)}
+                                            value={course.specialty || ""}
+                                            onValueChange={(val) => setCourse({ ...course, specialty: val })}
                                             disabled={!course.category}
                                         >
                                             <SelectTrigger>
