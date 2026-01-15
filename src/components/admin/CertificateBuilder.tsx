@@ -225,11 +225,22 @@ export function CertificateBuilder({ courseId, defaultMetadata = [], template, o
         notifyParent(newFields, bgImageFront, bgImageBack);
     };
 
-    const addCustomField = () => {
+    const addCustomField = (key?: string, val?: string) => {
         const newId = `custom-${Date.now()}`;
         setFields([
             ...fields,
-            { id: newId, label: "Nuevo Campo", x: 50, y: 50, fontSize: 18, color: "#000000", fontFamily: "Helvetica", visible: true, value: "Texto", page: activePage }
+            {
+                id: newId,
+                label: key || "Nuevo Campo",
+                x: 50,
+                y: 50,
+                fontSize: 18,
+                color: "#000000",
+                fontFamily: "Helvetica",
+                visible: true,
+                value: val || "Texto",
+                page: activePage
+            }
         ]);
         setSelectedFieldId(newId);
     };
@@ -390,8 +401,27 @@ export function CertificateBuilder({ courseId, defaultMetadata = [], template, o
 
                         <div className="space-y-2">
                             <Label className="text-base font-semibold">Campos - {activePage === 'front' ? 'Frontal' : 'Reverso'}</Label>
-                            <Button variant="outline" className="w-full border-dashed" onClick={addCustomField}>
-                                <Plus className="w-4 h-4 mr-2" /> Agregar Campo
+                            <div className="space-y-2 mb-4">
+                                <Label className="text-xs text-muted-foreground">Variables Disponibles</Label>
+                                <div className="flex flex-wrap gap-2">
+                                    {fetchedMetadata.map((meta) => (
+                                        <Button
+                                            key={meta.key}
+                                            variant="secondary"
+                                            size="sm"
+                                            className="text-xs h-7"
+                                            onClick={() => addCustomField(meta.key, meta.value)}
+                                            title={`Valor actual: ${meta.value}`}
+                                        >
+                                            <Plus className="w-3 h-3 mr-1" />
+                                            {meta.key}
+                                        </Button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <Button variant="outline" className="w-full border-dashed" onClick={() => addCustomField()}>
+                                <Plus className="w-4 h-4 mr-2" /> Agregar Campo Vacío
                             </Button>
 
                             <div className="grid gap-2 mt-2">

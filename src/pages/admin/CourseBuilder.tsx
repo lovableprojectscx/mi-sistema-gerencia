@@ -634,7 +634,7 @@ export default function CourseBuilder() {
                                         <Separator className="my-2" />
                                         <Label className="text-sm">Otros Datos Personalizados</Label>
 
-                                        {course.metadata?.filter((m: any) => !["Horas Lectivas", "Horas Académicas", "Créditos"].includes(m.key)).map((item: any, index: number) => {
+                                        {course.metadata?.filter((m: any) => !["Horas Lectivas", "Horas Académicas", "Créditos", "program_type", "live_url", "live_date", "certificates_enabled"].includes(m.key)).map((item: any, index: number) => {
                                             // We need the REAL index in the main array to update correctly
                                             const realIndex = course.metadata.findIndex((m: any) => m === item);
                                             return (
@@ -824,8 +824,8 @@ export default function CourseBuilder() {
                                     <div className="space-y-2">
                                         <Label>Especialidad</Label>
                                         <Select
-                                            value={course.specialty}
-                                            onValueChange={(val) => setCourse({ ...course, specialty: val })}
+                                            value={formData.instructor_id}
+                                            onValueChange={(value) => handleInputChange("instructor_id", value)}
                                             disabled={!course.category}
                                         >
                                             <SelectTrigger>
