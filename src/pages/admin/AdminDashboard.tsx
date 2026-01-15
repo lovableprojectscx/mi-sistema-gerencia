@@ -27,12 +27,7 @@ interface RecentEnrollment {
         price: number;
     } | null;
 }
-// ... (skip down to render)
-<div className="ml-4 space-y-1">
-    <p className="text-sm font-medium leading-none">{item.profiles?.full_name || "Usuario"}</p>
-    <p className="text-xs text-muted-foreground">{item.profiles?.dni || "Sin ID"}</p>
-    <p className="text-xs text-muted-foreground">{item.courses?.title}</p>
-</div>
+
 
 // Chart data type
 interface MonthlyRevenue {
