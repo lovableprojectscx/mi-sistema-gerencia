@@ -74,28 +74,29 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="max-w-2xl mx-auto mb-8"
+            className="max-w-xl mx-auto mb-8"
           >
             <div className="relative group">
               <div className="absolute inset-0 bg-accent/20 rounded-2xl blur-xl group-hover:bg-accent/30 transition-colors" />
-              <div className="relative flex items-center bg-white rounded-2xl shadow-xl overflow-hidden">
-                <Search className="w-5 h-5 text-muted-foreground ml-5" />
+              <div className="relative flex items-center bg-white rounded-xl shadow-xl overflow-hidden p-1">
+                <Search className="w-5 h-5 text-muted-foreground ml-3 shrink-0" />
                 <input
                   type="text"
-                  placeholder="¿Qué quieres aprender hoy?"
+                  placeholder="¿Qué quieres aprender?"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  className="flex-1 px-4 py-5 text-foreground placeholder:text-muted-foreground focus:outline-none text-base"
+                  className="flex-1 px-3 py-3 md:py-3 text-foreground placeholder:text-muted-foreground focus:outline-none text-sm md:text-base bg-transparent min-w-0"
                 />
                 <Button
                   variant="hero"
                   size="lg"
-                  className="m-2 rounded-xl"
+                  className="rounded-lg px-4 md:px-6 py-2 md:py-3 h-auto shrink-0"
                   onClick={handleSearch}
                 >
-                  Buscar cursos
-                  <ChevronRight className="w-4 h-4" />
+                  <span className="hidden md:inline">Buscar cursos</span>
+                  <span className="md:hidden">Buscar</span>
+                  <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
               </div>
             </div>

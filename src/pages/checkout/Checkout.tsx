@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -18,7 +17,8 @@ import {
     CreditCard,
     Lock,
     FileText,
-    AlertCircle
+    AlertCircle,
+    University
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -29,6 +29,7 @@ import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
 import { courseService } from "@/services/courseService";
 import { motion } from "framer-motion";
+import { PaymentMethod } from "@/types";
 
 export default function Checkout() {
     const { courseId } = useParams();
@@ -38,6 +39,27 @@ export default function Checkout() {
     const { settings } = useSiteSettings();
     const [user, setUser] = useState<any>(null);
     const [isDragging, setIsDragging] = useState(false);
+    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+    const [selectedMethodId, setSelectedMethodId] = useState<string | null>(null);
+
+    // Fetch active payment methods
+    useEffect(() => {
+        const fetchMethods = async () => {
+            const { data } = await supabase
+                .from('payment_methods')
+                .select('*')
+                .eq('is_active', true)
+                .order('created_at', { ascending: true });
+
+            if (data && data.length > 0) {
+                setPaymentMethods(data);
+                setSelectedMethodId(data[0].id);
+            }
+        };
+        fetchMethods();
+    }, []);
+
+    const selectedMethod = paymentMethods.find(m => m.id === selectedMethodId);
 
     useEffect(() => {
         supabase.auth.getUser().then(({ data }) => {
@@ -185,134 +207,184 @@ export default function Checkout() {
                             <p className="text-muted-foreground">Selecciona tu método de pago y completa tu inscripción.</p>
                         </div>
 
-                        <Card className="border-border shadow-sm overflow-hidden">
-                            <CardHeader className="bg-secondary/20 border-b border-border/50 pb-4">
-                                <CardTitle className="flex items-center gap-2 text-lg">
-                                    <Smartphone className="w-5 h-5 text-primary" />
-                                    Pago vía Yape / Plin
-                                </CardTitle>
-                                <CardDescription>La forma más rápida de inscribirte. Escanea y listo.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="p-6 md:p-8 space-y-8">
-                                <div className="flex flex-col md:flex-row gap-8 items-center md:items-start justify-center">
-                                    {/* QR Card */}
-                                    <div className="bg-white p-4 rounded-xl shadow-sm border border-border w-48 shrink-0 relative group">
-                                        {settings?.payment_qr_url ? (
-                                            <div className="aspect-square relative overflow-hidden rounded-lg">
-                                                <img
-                                                    src={settings.payment_qr_url}
-                                                    alt="QR de Pago"
-                                                    className="w-full h-full object-cover"
-                                                />
-                                                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                    <ScanLine className="w-8 h-8 text-white drop-shadow-md" />
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="aspect-square flex flex-col items-center justify-center bg-gray-50 rounded-lg text-muted-foreground">
-                                                <ScanLine className="w-8 h-8 mb-2 opacity-50" />
-                                                <span className="text-xs">Sin QR</span>
-                                            </div>
-                                        )}
-                                        <p className="text-center text-xs font-medium text-muted-foreground mt-3">Escanea desde tu App</p>
-                                    </div>
-
-                                    {/* Number & Info */}
-                                    <div className="flex-1 space-y-6 w-full text-center md:text-left">
-                                        <div className="space-y-4">
-                                            <div>
-                                                <Label className="text-muted-foreground text-xs uppercase tracking-wider font-semibold">Número de Celular</Label>
-                                                <div className="flex items-center gap-3 mt-1.5 container-input bg-secondary/30 p-1 pl-4 rounded-lg border border-border">
-                                                    <span className="font-mono text-xl font-bold tracking-wide text-foreground flex-1 text-left">
-                                                        {settings?.payment_number || "9-- --- ---"}
-                                                    </span>
-                                                    <Button
-                                                        size="sm"
-                                                        className="bg-white text-foreground hover:bg-gray-50 border border-border shadow-sm"
-                                                        onClick={() => {
-                                                            navigator.clipboard.writeText(settings?.payment_number || "");
-                                                            toast.success("Número copiado al portapapeles");
-                                                        }}
-                                                    >
-                                                        <Copy className="w-4 h-4 mr-2" />
-                                                        Copiar
-                                                    </Button>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <Label className="text-muted-foreground text-xs uppercase tracking-wider font-semibold">Titular de la cuenta</Label>
-                                                <div className="flex items-center gap-2 mt-1 text-foreground font-medium">
-                                                    <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                                                    {settings?.site_name || "Gerencia y Desarrollo Global"}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="bg-amber-50 border border-amber-100 text-amber-700 p-3 rounded-lg text-sm flex gap-3 text-left">
-                                            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                                            <p>Importante: Realiza el pago por el monto exacto y guarda la captura de pantalla de la confirmación.</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <Separator />
-
-                                {/* Upload Section - Improved */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <Label htmlFor="voucher" className="text-base font-semibold">Adjuntar Comprobante</Label>
-                                        <span className="text-xs text-muted-foreground bg-secondary px-2 py-1 rounded">Requerido</span>
-                                    </div>
-
+                        <motion.div layout className="space-y-6">
+                            {/* Payment Method Selection */}
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                {paymentMethods.map((method) => (
                                     <div
+                                        key={method.id}
+                                        onClick={() => setSelectedMethodId(method.id)}
                                         className={`
-                                            border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer relative
-                                            ${isDragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50 hover:bg-secondary/30"}
-                                            ${file ? "bg-green-50 border-green-200" : ""}
+                                            cursor-pointer rounded-xl border p-4 flex flex-col items-center justify-center gap-2 text-center transition-all bg-card hover:bg-accent/5
+                                            ${selectedMethodId === method.id ? "border-primary ring-1 ring-primary bg-primary/5" : "border-border hover:border-primary/50"}
                                         `}
-                                        onDragOver={handleDragOver}
-                                        onDragLeave={handleDragLeave}
-                                        onDrop={handleDrop}
                                     >
-                                        <Input
-                                            id="voucher"
-                                            type="file"
-                                            accept="image/*,application/pdf"
-                                            onChange={handleFileChange}
-                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                        />
-
-                                        {file ? (
-                                            <div className="flex flex-col items-center animate-in fade-in zoom-in duration-300">
-                                                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                                                    <CheckCircle2 className="w-6 h-6 text-green-600" />
-                                                </div>
-                                                <p className="font-semibold text-green-700 text-lg">{file.name}</p>
-                                                <p className="text-green-600/80 text-sm mt-1">Archivo listo para subir</p>
-                                                <Button size="sm" variant="outline" className="mt-4 border-green-200 text-green-700 hover:bg-green-100 z-20 relative">
-                                                    Cambiar archivo
-                                                </Button>
+                                        {method.type === 'qr' ? (
+                                            <div className="p-2 bg-purple-100 text-purple-600 rounded-full">
+                                                <ScanLine className="w-5 h-5" />
                                             </div>
                                         ) : (
-                                            <div className="flex flex-col items-center text-muted-foreground pointer-events-none">
-                                                <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
-                                                    <UploadCloud className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                                                </div>
-                                                <p className="font-medium text-foreground">Arrastra tu comprobante aquí</p>
-                                                <p className="text-sm mt-1">o haz clic para explorar archivos</p>
-                                                <p className="text-xs mt-4 text-muted-foreground/70">Soporta JPG, PNG o PDF (Max 5MB)</p>
+                                            <div className="p-2 bg-blue-100 text-blue-600 rounded-full">
+                                                <CreditCard className="w-5 h-5" />
                                             </div>
                                         )}
+                                        <span className="font-semibold text-sm">{method.name}</span>
                                     </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                ))}
+                            </div>
 
-                        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground grayscale opacity-70">
-                            <div className="flex items-center gap-1"><Lock className="w-3 h-3" /> SSL Seguro</div>
-                            <span>•</span>
-                            <div className="flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> Garantía de Satisfacción</div>
+                            {selectedMethod && (
+                                <Card className="border-border shadow-sm overflow-hidden animate-in fade-in zoom-in duration-300">
+                                    <CardHeader className="bg-secondary/20 border-b border-border/50 pb-4">
+                                        <CardTitle className="flex items-center gap-2 text-lg">
+                                            {selectedMethod.type === 'qr' ? <Smartphone className="w-5 h-5 text-primary" /> : <University className="w-5 h-5 text-blue-600" />}
+                                            Datos para {selectedMethod.name}
+                                        </CardTitle>
+                                        <CardDescription>
+                                            {selectedMethod.type === 'qr' ? "Escanea el código o usa el número." : "Realiza la transferencia a la siguiente cuenta."}
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="p-6 md:p-8 space-y-8">
+                                        <div className="flex flex-col md:flex-row gap-8 items-center md:items-start justify-center">
+                                            {/* QR / Icon */}
+                                            <div className="bg-white p-4 rounded-xl shadow-sm border border-border w-48 shrink-0 relative group">
+                                                {selectedMethod.type === 'qr' && selectedMethod.qr_url ? (
+                                                    <div className="aspect-square relative overflow-hidden rounded-lg">
+                                                        <img
+                                                            src={selectedMethod.qr_url}
+                                                            alt={`QR ${selectedMethod.name}`}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <div className="aspect-square flex flex-col items-center justify-center bg-gray-50 rounded-lg text-muted-foreground">
+                                                        {selectedMethod.type === 'qr' ? (
+                                                            <ScanLine className="w-12 h-12 opacity-20" />
+                                                        ) : (
+                                                            <University className="w-12 h-12 opacity-20" />
+                                                        )}
+                                                        <span className="text-xs mt-2 block opacity-50">{selectedMethod.name}</span>
+                                                    </div>
+                                                )}
+                                                {selectedMethod.type === 'qr' && <p className="text-center text-xs font-medium text-muted-foreground mt-3">Escanea el QR</p>}
+                                            </div>
+
+                                            {/* Details */}
+                                            <div className="flex-1 space-y-6 w-full text-center md:text-left">
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <Label className="text-muted-foreground text-xs uppercase tracking-wider font-semibold">Titular</Label>
+                                                        <div className="flex items-center gap-2 mt-1 text-foreground font-medium">
+                                                            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                                                            {selectedMethod.account_name}
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <Label className="text-muted-foreground text-xs uppercase tracking-wider font-semibold">
+                                                            {selectedMethod.type === 'qr' ? "Número de Celular" : "Número de Cuenta"}
+                                                        </Label>
+                                                        <div className="flex items-center gap-3 mt-1.5 container-input bg-secondary/30 p-1 pl-4 rounded-lg border border-border">
+                                                            <span className="font-mono text-xl font-bold tracking-wide text-foreground flex-1 text-left break-all">
+                                                                {selectedMethod.account_number}
+                                                            </span>
+                                                            <Button
+                                                                size="sm"
+                                                                variant="ghost"
+                                                                onClick={() => {
+                                                                    navigator.clipboard.writeText(selectedMethod.account_number);
+                                                                    toast.success("Copiado al portapapeles");
+                                                                }}
+                                                            >
+                                                                <Copy className="w-4 h-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+
+                                                    {selectedMethod.cci && (
+                                                        <div>
+                                                            <Label className="text-muted-foreground text-xs uppercase tracking-wider font-semibold">CCI</Label>
+                                                            <div className="flex items-center gap-3 mt-1.5 bg-secondary/10 p-1 pl-4 rounded-lg border border-border/50">
+                                                                <span className="font-mono text-sm tracking-wide text-foreground flex-1 text-left break-all">
+                                                                    {selectedMethod.cci}
+                                                                </span>
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="ghost"
+                                                                    onClick={() => {
+                                                                        navigator.clipboard.writeText(selectedMethod.cci!);
+                                                                        toast.success("CCI copiado");
+                                                                    }}
+                                                                >
+                                                                    <Copy className="w-3 h-3" />
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {selectedMethod.instructions && (
+                                                        <div className="bg-amber-50 border border-amber-100 text-amber-700 p-3 rounded-lg text-sm flex gap-3 text-left">
+                                                            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                                                            <p>{selectedMethod.instructions}</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </motion.div>
+
+                        <Separator />
+
+                        {/* Upload Section - Improved */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="voucher" className="text-base font-semibold">Adjuntar Comprobante</Label>
+                                <span className="text-xs text-muted-foreground bg-secondary px-2 py-1 rounded">Requerido</span>
+                            </div>
+
+                            <div
+                                className={`
+                                    border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer relative
+                                    ${isDragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50 hover:bg-secondary/30"}
+                                    ${file ? "bg-green-50 border-green-200" : ""}
+                                `}
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                            >
+                                <Input
+                                    id="voucher"
+                                    type="file"
+                                    accept="image/*,application/pdf"
+                                    onChange={handleFileChange}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                />
+
+                                {file ? (
+                                    <div className="flex flex-col items-center animate-in fade-in zoom-in duration-300">
+                                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                                            <CheckCircle2 className="w-6 h-6 text-green-600" />
+                                        </div>
+                                        <p className="font-semibold text-green-700 text-lg">{file.name}</p>
+                                        <p className="text-green-600/80 text-sm mt-1">Archivo listo para subir</p>
+                                        <Button size="sm" variant="outline" className="mt-4 border-green-200 text-green-700 hover:bg-green-100 z-20 relative">
+                                            Cambiar archivo
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col items-center text-muted-foreground pointer-events-none">
+                                        <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
+                                            <UploadCloud className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                                        </div>
+                                        <p className="font-medium text-foreground">Arrastra tu comprobante aquí</p>
+                                        <p className="text-sm mt-1">o haz clic para explorar archivos</p>
+                                        <p className="text-xs mt-4 text-muted-foreground/70">Soporta JPG, PNG o PDF (Max 5MB)</p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
 

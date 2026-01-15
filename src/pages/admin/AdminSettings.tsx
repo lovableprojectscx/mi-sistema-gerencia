@@ -11,6 +11,7 @@ import { Save, Upload, Building, Smartphone, QrCode, FileImage } from "lucide-re
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { PaymentMethodsManager } from "@/components/admin/PaymentMethodsManager";
 
 export default function AdminSettings() {
     const { settings, loading: settingsLoading, refetch } = useSiteSettings();
@@ -152,55 +153,7 @@ export default function AdminSettings() {
                 </TabsContent>
 
                 <TabsContent value="payment">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Configuración de Pagos Manuales</CardTitle>
-                            <CardDescription>Gestiona los datos que ven los estudiantes al pagar con Yape/Plin.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="grid gap-6 md:grid-cols-2">
-                                <div className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label>Número de Celular (Yape/Plin)</Label>
-                                        <div className="relative">
-                                            <Smartphone className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                            <Input
-                                                className="pl-9 font-mono text-lg"
-                                                placeholder="987 654 321"
-                                                value={formData.payment_number}
-                                                onChange={(e) => setFormData({ ...formData, payment_number: e.target.value })}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>URL del Código QR</Label>
-                                        <div className="relative">
-                                            <QrCode className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                            <Input
-                                                className="pl-9"
-                                                placeholder="https://misitio.com/mi-qr.png"
-                                                value={formData.payment_qr_url}
-                                                onChange={(e) => setFormData({ ...formData, payment_qr_url: e.target.value })}
-                                            />
-                                        </div>
-                                        <p className="text-xs text-muted-foreground">Sube tu imagen a un hosting público o Supabase Storage y pega el link aquí.</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg bg-secondary/20">
-                                    {formData.payment_qr_url ? (
-                                        <img src={formData.payment_qr_url} alt="QR Preview" className="max-w-[200px] rounded-lg shadow-sm" />
-                                    ) : (
-                                        <div className="text-center text-muted-foreground">
-                                            <QrCode className="w-12 h-12 mx-auto mb-2 opacity-20" />
-                                            <p>Previsualización del QR</p>
-                                        </div>
-                                    )}
-                                    <p className="mt-4 font-mono font-bold">{formData.payment_number || "999 999 999"}</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <PaymentMethodsManager />
                 </TabsContent>
             </Tabs>
         </div>
