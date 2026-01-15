@@ -73,12 +73,16 @@ const CursoDetalle = () => {
         .select('*')
         .eq('user_id', user.id)
         .eq('course_id', id)
-        .single();
+        .eq('user_id', user.id)
+        .eq('course_id', id)
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        // Silent error for UX
+      if (error) {
+        // Log real errors but don't crash
+        console.error("Error fetching enrollment:", error);
+        return null; // Equivalent to not finding one
       }
-      return data; // returns null if no enrollment found
+      return data; // returns data or null
     },
     enabled: !!id && !!user
   });

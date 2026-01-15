@@ -167,8 +167,8 @@ export default function CourseBuilder() {
                         title: descriptorInput,
                         content_url: descriptorUrl,
                         duration: descriptorDuration,
-                        type: 'video', // Default
-                        order: 999,
+                        type: 'video',
+                        order: (course.modules?.find((m: any) => m.id === currentModuleId)?.lessons?.length || 0) + 1,
                         is_free_preview: false
                     });
                     toast.success("Lección agregada");

@@ -90,9 +90,10 @@ export const courseService = {
             enrollments(user_id)
         `)
             .eq('id', id)
-            .single();
+            .maybeSingle();
 
         if (error) throw error;
+        if (!data) throw new Error("Course not found");
 
         // Sort modules and lessons by order
         const courseData = data as unknown as Course & { modules: Module[] };
@@ -274,7 +275,7 @@ export const courseService = {
                 )
             `)
             .eq('id', courseId)
-            .single();
+            .maybeSingle();
 
         if (courseError || !course) {
             console.error("Error recalculating progress: course not found", courseError);
@@ -320,7 +321,7 @@ export const courseService = {
                 )
             `)
             .eq('id', courseId)
-            .single();
+            .maybeSingle();
 
         if (courseError || !course) {
             // If course not found or error, return empty valid list
@@ -345,7 +346,7 @@ export const courseService = {
     // --- Enrollments & Certificates ---
     async approveEnrollment(id: string) {
         // 1. Get enrollment details to know user and course
-        const { data: enrollment, error: fetchError } = await supabase.from('enrollments').select('*').eq('id', id).single();
+        const { data: enrollment, error: fetchError } = await supabase.from('enrollments').select('*').eq('id', id).maybeSingle();
         if (fetchError || !enrollment) throw fetchError || new Error("Enrollment not found");
 
         // 2. Update status

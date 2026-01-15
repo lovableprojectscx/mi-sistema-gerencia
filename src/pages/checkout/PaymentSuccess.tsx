@@ -43,10 +43,11 @@ export default function PaymentSuccess() {
                 .from("enrollments")
                 .select("status, course_id")
                 .eq("id", enrollmentId)
-                .single();
+                .eq("id", enrollmentId)
+                .maybeSingle();
 
             if (error) {
-                console.error(error);
+                console.error("Error fetching enrollment:", error);
                 setStatus("pending");
             } else if (data) {
                 setStatus(data.status as any);
@@ -97,7 +98,8 @@ export default function PaymentSuccess() {
                 .from("enrollments")
                 .select("status, course_id")
                 .eq("id", enrollmentId)
-                .single();
+                .eq("id", enrollmentId)
+                .maybeSingle();
 
             if (data && data.status !== status) {
                 setStatus(data.status as any);

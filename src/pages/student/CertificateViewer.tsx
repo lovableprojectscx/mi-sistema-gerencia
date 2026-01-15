@@ -33,10 +33,10 @@ export default function CertificateViewer() {
                     )
                 `)
                 .eq("id", id)
-                .single();
+                .maybeSingle();
 
             if (error) throw error;
-            return data;
+            return data; // Returns null if not found, handled by component
         },
         enabled: !!id
     });

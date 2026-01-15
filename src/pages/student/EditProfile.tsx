@@ -40,17 +40,29 @@ export default function EditProfile() {
                 .from('profiles')
                 .select('*')
                 .eq('id', user.id)
-                .single();
+                .eq('id', user.id)
+                .maybeSingle();
 
             if (error) throw error;
 
-            setFormData({
-                id: user.id,
-                full_name: data.full_name || "",
-                dni: data.dni || "",
-                email: user.email || "",
-                avatar_url: data.avatar_url || ""
-            });
+            if (data) {
+                setFormData({
+                    id: user.id,
+                    full_name: data.full_name || "",
+                    dni: data.dni || "",
+                    email: user.email || "",
+                    avatar_url: data.avatar_url || ""
+                });
+            } else {
+                // Profile doesn't exist yet, init with defaults
+                setFormData({
+                    id: user.id,
+                    full_name: "",
+                    dni: "",
+                    email: user.email || "",
+                    avatar_url: ""
+                });
+            }
         } catch (error) {
             console.error('Error loading profile:', error);
             toast.error("Error al cargar perfil");
