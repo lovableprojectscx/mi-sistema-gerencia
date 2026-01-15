@@ -84,16 +84,23 @@ export default function AdminDashboard() {
                 }));
 
                 // 3. Fetch Recent Enrollments details
-                const { data: recent } = await supabase
+                // Using explicit aliases to match AdminEnrollments.tsx which is known to work
+                const { data: recent, error: recentError } = await supabase
                     .from('enrollments')
                     .select(`
                         id,
                         purchased_at,
-                        profiles (full_name, email),
-                        courses (title, price)
+                        user_id,
+                        course_id,
+                        profiles:user_id (full_name, email),
+                        courses:course_id (title, price)
                     `)
                     .order('purchased_at', { ascending: false })
                     .limit(5);
+
+                if (recentError) {
+                    console.error("Error fetching recent enrollments:", recentError);
+                }
 
                 const formattedRecent: RecentEnrollment[] = recent?.map((item: any) => ({
                     id: item.id,
