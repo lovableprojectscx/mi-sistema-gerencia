@@ -56,7 +56,7 @@ export const courseService = {
     async getAll() {
         const { data, error } = await supabase
             .from('courses')
-            .select('*, instructor:instructors(name), enrollments(user_id)')
+            .select('*, instructor:instructors(name)')
             .order('created_at', { ascending: false });
 
         if (error) throw error;

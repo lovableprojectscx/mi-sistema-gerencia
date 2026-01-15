@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Trash, Edit, Save, X, QrCode, University, Upload, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash, Edit, Save, X, QrCode, University, Upload, Image as ImageIcon, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { PaymentMethod } from "@/types";
@@ -28,6 +28,7 @@ export function PaymentMethodsManager() {
         instructions: "",
         is_active: true
     });
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         fetchMethods();
@@ -137,6 +138,36 @@ export function PaymentMethodsManager() {
         });
     };
 
+    const handleQrUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `qr-${Math.random()}.${fileExt}`;
+            const filePath = `payment-methods/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('course-content')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data } = supabase.storage
+                .from('course-content')
+                .getPublicUrl(filePath);
+
+            setFormData({ ...formData, qr_url: data.publicUrl });
+            toast.success("Código QR subido correctamente");
+        } catch (error: any) {
+            console.error(error);
+            toast.error("Error al subir imagen");
+        } finally {
+            setUploading(false);
+        }
+    };
+
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -219,15 +250,36 @@ export function PaymentMethodsManager() {
 
                             {formData.type === 'qr' && (
                                 <div className="grid gap-2">
-                                    <Label>URL del Código QR</Label>
+                                    <Label>Imagen del Código QR</Label>
                                     <div className="flex gap-2">
                                         <Input
                                             placeholder="https://..."
                                             value={formData.qr_url || ""}
                                             onChange={(e) => setFormData({ ...formData, qr_url: e.target.value })}
+                                            className="flex-1"
                                         />
+                                        <div className="relative">
+                                            <Input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleQrUpload}
+                                                className="hidden"
+                                                id="qr-upload"
+                                                disabled={uploading}
+                                            />
+                                            <Button variant="outline" size="icon" asChild>
+                                                <Label htmlFor="qr-upload" className="cursor-pointer">
+                                                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                                </Label>
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-muted-foreground">Pega la URL de tu imagen QR.</p>
+                                    {formData.qr_url && (
+                                        <div className="mt-2 relative w-full h-40 bg-secondary/20 rounded-lg border overflow-hidden flex items-center justify-center">
+                                            <img src={formData.qr_url} alt="QR Preview" className="h-full object-contain" />
+                                        </div>
+                                    )}
+                                    <p className="text-xs text-muted-foreground">Sube una imagen o pega la URL.</p>
                                 </div>
                             )}
 
