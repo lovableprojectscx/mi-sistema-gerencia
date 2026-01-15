@@ -20,13 +20,19 @@ interface RecentEnrollment {
     purchased_at: string;
     profiles: {
         full_name: string | null;
-        email: string | null;
+        dni: string | null;
     } | null;
     courses: {
         title: string;
         price: number;
     } | null;
 }
+// ... (skip down to render)
+<div className="ml-4 space-y-1">
+    <p className="text-sm font-medium leading-none">{item.profiles?.full_name || "Usuario"}</p>
+    <p className="text-xs text-muted-foreground">{item.profiles?.dni || "Sin ID"}</p>
+    <p className="text-xs text-muted-foreground">{item.courses?.title}</p>
+</div>
 
 // Chart data type
 interface MonthlyRevenue {
@@ -92,7 +98,7 @@ export default function AdminDashboard() {
                         purchased_at,
                         user_id,
                         course_id,
-                        profiles:user_id (full_name, email),
+                        profiles:user_id (full_name, dni),
                         courses:course_id (title, price)
                     `)
                     .order('purchased_at', { ascending: false })
@@ -220,7 +226,7 @@ export default function AdminDashboard() {
                                     </div>
                                     <div className="ml-4 space-y-1">
                                         <p className="text-sm font-medium leading-none">{item.profiles?.full_name || "Usuario"}</p>
-                                        <p className="text-xs text-muted-foreground">{item.profiles?.email}</p>
+                                        <p className="text-xs text-muted-foreground">{item.profiles?.dni || "Sin ID"}</p>
                                         <p className="text-xs text-muted-foreground">{item.courses?.title}</p>
                                     </div>
                                     <div className="ml-auto font-medium">{item.courses?.price ? formatCurrency(item.courses.price) : "Gratis"}</div>
