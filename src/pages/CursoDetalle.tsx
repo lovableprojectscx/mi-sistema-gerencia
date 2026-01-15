@@ -218,7 +218,7 @@ const CursoDetalle = () => {
                 </div>
 
                 {/* Title */}
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                   {course.title}
                 </h1>
 
@@ -264,7 +264,7 @@ const CursoDetalle = () => {
                 <div className="pt-8 flex items-center gap-4">
                   <img
                     src={course.instructor?.avatar_url || "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&fit=crop"}
-                    alt={course.instructor?.name}
+                    alt={course.instructor?.name || "Instructor"}
                     className="w-14 h-14 rounded-full object-cover ring-2 ring-accent/50 bg-slate-800"
                   />
                   <div>
