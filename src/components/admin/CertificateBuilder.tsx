@@ -216,6 +216,8 @@ export function CertificateBuilder({ courseId, defaultMetadata = [], template, o
             toast.error("Error: " + error.message, { id: toastId });
         } finally {
             setUploading(false);
+            // Reset input so validation triggers again if needed or same file can be selected
+            e.target.value = "";
         }
     };
 
