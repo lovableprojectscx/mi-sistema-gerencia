@@ -5,9 +5,19 @@ export const COURSE_CATEGORIES = [
         specialties: [
             { id: "nursing", label: "Enfermería" },
             { id: "pharmacy", label: "Farmacia" },
-            { id: "veterinary", label: "Veterinaria" },
             { id: "nutrition", label: "Nutrición" },
-            { id: "medicine", label: "Medicina General" }
+            { id: "medicine", label: "Medicina General" },
+            { id: "psychology", label: "Psicología" }
+        ]
+    },
+    {
+        id: "veterinary",
+        label: "Veterinaria",
+        specialties: [
+            { id: "small_animals", label: "Animales Menores" },
+            { id: "large_animals", label: "Animales Mayores" },
+            { id: "exotics", label: "Fauna Silvestre y Exóticos" },
+            { id: "vet_nursing", label: "Asistente Veterinario" }
         ]
     },
     {

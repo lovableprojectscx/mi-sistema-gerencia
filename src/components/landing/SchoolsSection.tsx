@@ -13,7 +13,17 @@ const schoolsConfig = [
     image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=800",
     color: "school-health",
     borderColor: "border-school-health/20",
-    href: "/catalogo?area=salud",
+    href: "/catalogo?area=health",
+  },
+  {
+    id: "veterinaria",
+    categoryKey: "veterinary",
+    name: "Veterinaria",
+    description: "Medicina veterinaria, salud pública y cuidado de animales menores y mayores",
+    image: "https://images.unsplash.com/photo-1628009368231-760335298029?auto=format&fit=crop&q=80&w=800",
+    color: "school-veterinary",
+    borderColor: "border-school-veterinary/20",
+    href: "/catalogo?area=veterinary",
   },
   {
     id: "ingenieria",

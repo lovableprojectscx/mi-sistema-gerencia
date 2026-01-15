@@ -30,6 +30,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const areas = [
   { id: "health", label: "Salud" },
+  { id: "veterinary", label: "Veterinaria" },
   { id: "engineering", label: "Ingeniería" },
   { id: "agronomy", label: "Agronomía" },
   { id: "management", label: "Gestión Pública y Empresarial" },

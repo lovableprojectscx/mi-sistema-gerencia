@@ -69,6 +69,8 @@ export default {
           health: "hsl(var(--school-health))",
           engineering: "hsl(var(--school-engineering))",
           management: "hsl(var(--school-management))",
+          veterinary: "hsl(var(--school-veterinary))",
+          agronomy: "hsl(var(--school-agronomy))",
         },
       },
       fontFamily: {
