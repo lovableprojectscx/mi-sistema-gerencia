@@ -89,8 +89,8 @@ export default function AdminDashboard() {
                     .select(`
                         id,
                         purchased_at,
-                        profiles:user_id (full_name, email),
-                        courses:course_id (title, price)
+                        profiles (full_name, email),
+                        courses (title, price)
                     `)
                     .order('purchased_at', { ascending: false })
                     .limit(5);
