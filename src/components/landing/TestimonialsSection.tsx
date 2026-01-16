@@ -46,18 +46,18 @@ export const TestimonialsSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Historias de <span className="font-display italic text-accent">Éxito</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
             Profesionales que transformaron su carrera con nuestras certificaciones
           </p>
         </motion.div>
 
         {/* Testimonials Grid */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-10 md:mb-16">
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.id}
@@ -65,11 +65,11 @@ export const TestimonialsSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="bg-card rounded-2xl p-8 shadow-card relative"
+              className="bg-card rounded-2xl p-6 md:p-8 shadow-card relative"
             >
               {/* Quote Icon */}
               <div className="absolute top-6 right-6 text-accent/20">
-                <Quote className="w-10 h-10" />
+                <Quote className="w-8 h-8 md:w-10 md:h-10" />
               </div>
 
               {/* Rating */}
@@ -80,7 +80,7 @@ export const TestimonialsSection = () => {
               </div>
 
               {/* Content */}
-              <p className="text-foreground/80 leading-relaxed mb-6">
+              <p className="text-foreground/80 leading-relaxed mb-6 text-sm md:text-base">
                 "{testimonial.content}"
               </p>
 
@@ -89,11 +89,11 @@ export const TestimonialsSection = () => {
                 <img
                   src={testimonial.avatar}
                   alt={testimonial.name}
-                  className="w-12 h-12 rounded-full object-cover ring-2 ring-accent/20"
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-accent/20"
                 />
                 <div>
-                  <div className="font-semibold text-foreground">{testimonial.name}</div>
-                  <div className="text-sm text-muted-foreground">{testimonial.role}</div>
+                  <div className="font-semibold text-foreground text-sm md:text-base">{testimonial.name}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground">{testimonial.role}</div>
                 </div>
               </div>
             </motion.div>
@@ -109,14 +109,14 @@ export const TestimonialsSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center pt-8 border-t border-border/50"
         >
-          <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-10">
+          <p className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-8 md:mb-10">
             Nuestros egresados destacan en las mejores instituciones
           </p>
 
           <div className="relative flex overflow-hidden mask-linear-fade">
             {/* Gradient Masks */}
-            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-secondary/30 to-transparent z-10" />
-            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-secondary/30 to-transparent z-10" />
+            <div className="absolute left-0 top-0 bottom-0 w-12 md:w-20 bg-gradient-to-r from-secondary/30 to-transparent z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-12 md:w-20 bg-gradient-to-l from-secondary/30 to-transparent z-10" />
 
             {/* Marquee Container */}
             <div className="flex animate-marquee gap-8 items-center">
@@ -125,12 +125,12 @@ export const TestimonialsSection = () => {
                 return (
                   <div
                     key={`${institution.name}-${index}`}
-                    className="flex-shrink-0 flex items-center gap-3 px-8 py-4 bg-card/80 backdrop-blur-sm rounded-xl shadow-sm border border-border/50 hover:border-accent/30 hover:shadow-md transition-all duration-300 group min-w-[200px]"
+                    className="flex-shrink-0 flex items-center gap-3 px-6 py-3 md:px-8 md:py-4 bg-card/80 backdrop-blur-sm rounded-xl shadow-sm border border-border/50 hover:border-accent/30 hover:shadow-md transition-all duration-300 group min-w-[160px] md:min-w-[200px]"
                   >
                     <div className={`p-2 rounded-lg bg-secondary group-hover:bg-white transition-colors`}>
-                      <Icon className={`w-6 h-6 ${institution.color}`} />
+                      <Icon className={`w-5 h-5 md:w-6 md:h-6 ${institution.color}`} />
                     </div>
-                    <span className="font-bold text-foreground text-sm tracking-tight">{institution.name}</span>
+                    <span className="font-bold text-foreground text-xs md:text-sm tracking-tight">{institution.name}</span>
                   </div>
                 )
               })}

@@ -23,19 +23,19 @@ export const FeaturedCourses = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col md:flex-row md:items-end md:justify-between mb-12"
+          className="flex flex-col md:flex-row md:items-end md:justify-between mb-8 md:mb-12"
         >
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4">
               Cursos <span className="font-display italic text-accent">Destacados</span>
             </h2>
-            <p className="text-muted-foreground text-lg max-w-xl">
+            <p className="text-muted-foreground text-base md:text-lg max-w-xl">
               Los programas más solicitados por profesionales que buscan
               certificarse y avanzar en su carrera
             </p>
           </div>
           <Link to="/catalogo" className="mt-6 md:mt-0">
-            <Button variant="outline" size="lg" className="group">
+            <Button variant="outline" size="lg" className="group w-full md:w-auto">
               Ver todo el catálogo
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
@@ -43,7 +43,7 @@ export const FeaturedCourses = () => {
         </motion.div>
 
         {/* Courses Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {isLoading ? (
             <div className="col-span-full flex justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -56,7 +56,7 @@ export const FeaturedCourses = () => {
                 {...course}
                 instructor={course.instructor?.name || "Instructor"}
                 originalPrice={course.original_price}
-                rating={5.0}
+                rating={5.0} // Default for now
                 students={course.students || 0}
                 duration="Flexible"
               />

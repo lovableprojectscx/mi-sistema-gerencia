@@ -274,11 +274,11 @@ const Catalogo = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative bg-hero-gradient pt-32 pb-24 overflow-hidden">
+      <section className="relative bg-hero-gradient pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
         {/* Background Pattern - Glowing Orbs */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-accent rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent/50 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
+          <div className="absolute top-0 left-0 w-72 h-72 md:w-96 md:h-96 bg-accent rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] md:w-[500px] md:h-[500px] bg-accent/50 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
         </div>
 
         {/* Grid Pattern Overlay */}
@@ -289,26 +289,26 @@ const Catalogo = () => {
           }}
         />
 
-        <div className="container-custom relative z-10">
+        <div className="container-custom relative z-10 px-4 md:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6">
               Explora Nuestro <br />
               <span className="font-display italic text-accent">Catálogo Académico</span>
             </h1>
-            <p className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base md:text-xl text-white/80 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed">
               Encuentra el programa perfecto para potenciar tus habilidades y alcanzar nuevas metas profesionales.
             </p>
 
             {/* Premium Search Bar */}
-            <div className="relative max-w-2xl mx-auto group">
+            <div className="relative w-full max-w-2xl mx-auto group px-4 md:px-0">
               <div className="absolute inset-0 bg-accent/20 rounded-2xl blur-xl group-hover:bg-accent/30 transition-colors opacity-0 group-hover:opacity-100 duration-500" />
               <div className="relative flex items-center bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl overflow-hidden focus-within:bg-white/20 transition-colors">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70" />
+                <Search className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-white/70" />
                 <input
                   type="text"
                   placeholder="¿Qué quieres aprender hoy?"
@@ -317,15 +317,15 @@ const Catalogo = () => {
                     setSearchQuery(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="w-full pl-14 pr-6 py-5 bg-transparent text-white placeholder:text-white/50 focus:outline-none text-lg font-medium"
+                  className="w-full pl-10 md:pl-14 pr-4 md:pr-6 py-4 md:py-5 bg-transparent text-white placeholder:text-white/50 focus:outline-none text-base md:text-lg font-medium"
                 />
               </div>
             </div>
           </motion.div>
         </div>
         {/* Bottom Wave */}
-        <div className="absolute bottom-0 left-0 right-0 z-0">
-          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
+        <div className="absolute -bottom-[1px] left-0 right-0 z-0 leading-none">
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block">
             <path
               d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
               fill="hsl(var(--background))"
@@ -335,7 +335,7 @@ const Catalogo = () => {
       </section>
 
       {/* Main Content */}
-      <section className="section-padding">
+      <section className="section-padding pt-8 md:pt-16">
         <div className="container-custom">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Desktop Sidebar */}
@@ -352,12 +352,12 @@ const Catalogo = () => {
             {/* Main Content Area */}
             <div className="flex-1">
               {/* Toolbar */}
-              <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-                <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                <div className="flex items-center gap-3 justify-between sm:justify-start w-full sm:w-auto">
                   {/* Mobile Filter Button */}
                   <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                     <SheetTrigger asChild>
-                      <Button variant="outline" className="lg:hidden relative">
+                      <Button variant="outline" className="lg:hidden relative flex-1 sm:flex-none">
                         <SlidersHorizontal className="w-4 h-4 mr-2" />
                         Filtros
                         {activeFiltersCount > 0 && (
@@ -367,7 +367,7 @@ const Catalogo = () => {
                         )}
                       </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="w-80">
+                    <SheetContent side="left" className="w-80 overflow-y-auto">
                       <SheetHeader>
                         <SheetTitle>Filtros</SheetTitle>
                       </SheetHeader>
@@ -377,14 +377,14 @@ const Catalogo = () => {
                     </SheetContent>
                   </Sheet>
 
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-semibold text-foreground">{filteredCourses.length}</span> cursos encontrados
+                  <p className="text-sm text-muted-foreground whitespace-nowrap">
+                    <span className="font-semibold text-foreground">{filteredCourses.length}</span> cursos
                   </p>
                 </div>
 
                 {/* Sort */}
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-full sm:w-[180px]">
                     <SelectValue placeholder="Ordenar por" />
                   </SelectTrigger>
                   <SelectContent>
@@ -434,7 +434,7 @@ const Catalogo = () => {
               {isLoading ? (
                 <div className="flex justify-center py-20"><Loader2 className="animate-spin w-10 h-10 text-primary" /></div>
               ) : paginatedCourses.length > 0 ? (
-                <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                   {paginatedCourses.map((course: any) => (
                     <CourseCard
                       key={course.id}

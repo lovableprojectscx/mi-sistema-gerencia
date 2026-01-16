@@ -36,14 +36,14 @@ export const CTASection = () => {
           </div>
 
           {/* Content */}
-          <div className="relative z-10 px-8 py-20 md:px-20 md:py-24 text-center">
+          <div className="relative z-10 px-6 py-12 md:px-20 md:py-24 text-center">
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-semibold mb-8 backdrop-blur-md"
+              className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs md:text-sm font-semibold mb-6 md:mb-8 backdrop-blur-md"
             >
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
               <span>Impulsa tu carrera hoy</span>
             </motion.div>
 
@@ -51,7 +51,7 @@ export const CTASection = () => {
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 max-w-4xl mx-auto leading-tight md:leading-tight tracking-tight"
+              className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 max-w-4xl mx-auto leading-tight md:leading-tight tracking-tight"
             >
               ¿Listo para alcanzar tu <br className="hidden md:block" />
               <span className="font-display italic text-accent">máximo potencial?</span>
@@ -61,7 +61,7 @@ export const CTASection = () => {
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="text-lg md:text-xl text-slate-300 mb-12 max-w-2xl mx-auto leading-relaxed"
+              className="text-base md:text-xl text-slate-300 mb-8 md:mb-12 max-w-2xl mx-auto leading-relaxed"
             >
               Únete a miles de profesionales que ya están liderando el cambio en sus sectores. Certifícate con los mejores expertos.
             </motion.p>
@@ -70,12 +70,12 @@ export const CTASection = () => {
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="flex flex-col sm:flex-row gap-5 justify-center items-center"
+              className="flex flex-col sm:flex-row gap-4 md:gap-5 justify-center items-center"
             >
               <Button
                 asChild
                 size="xl"
-                className="bg-accent text-white hover:bg-accent/90 font-bold shadow-xl shadow-accent/20 h-14 px-8 text-lg rounded-xl transition-all hover:scale-105"
+                className="bg-accent text-white hover:bg-accent/90 font-bold shadow-xl shadow-accent/20 h-12 md:h-14 px-8 text-base md:text-lg rounded-xl transition-all hover:scale-105 w-full sm:w-auto"
               >
                 <Link to="/catalogo">
                   Explorar todos los cursos
@@ -87,7 +87,7 @@ export const CTASection = () => {
                 asChild
                 variant="outline"
                 size="xl"
-                className="border-white/10 bg-white/5 text-white hover:bg-white/10 backdrop-blur-sm h-14 px-8 text-lg rounded-xl transition-all hover:scale-105"
+                className="border-white/10 bg-white/5 text-white hover:bg-white/10 backdrop-blur-sm h-12 md:h-14 px-8 text-base md:text-lg rounded-xl transition-all hover:scale-105 w-full sm:w-auto"
               >
 
                 <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer">

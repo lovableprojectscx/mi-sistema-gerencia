@@ -104,7 +104,7 @@ const Nosotros = () => {
           }}
         />
 
-        <div className="container-custom relative z-10 py-20 lg:py-32">
+        <div className="container-custom relative z-10 py-16 lg:py-32">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
             {/* Text Content */}
             <motion.div
@@ -118,14 +118,14 @@ const Nosotros = () => {
                 Institución Líder en Capacitación
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight tracking-tight mb-8">
+              <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold text-white leading-tight tracking-tight mb-8">
                 Transformamos el presente para{" "}
                 <span className="text-accent font-display italic">
                   liderar el futuro
                 </span>
               </h1>
 
-              <p className="text-lg text-white/80 max-w-xl mx-auto lg:mx-0 leading-relaxed mb-10">
+              <p className="text-base md:text-lg text-white/80 max-w-xl mx-auto lg:mx-0 leading-relaxed mb-10">
                 Centro de Capacitación de Educación Continua orientado a fortalecer
                 las competencias profesionales, técnicas y humanas.
               </p>
@@ -136,20 +136,20 @@ const Nosotros = () => {
               initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ duration: 1, delay: 0.2, type: "spring" }}
-              className="lg:w-1/2 relative"
+              className="lg:w-1/2 relative w-full"
             >
-              <div className="relative w-full max-w-md mx-auto aspect-square flex items-center justify-center">
+              <div className="relative w-full max-w-[280px] md:max-w-md mx-auto aspect-square flex items-center justify-center">
                 {/* Decorative background glow */}
                 <div className="absolute inset-0 bg-accent/20 rounded-full blur-[80px] animate-pulse" />
 
                 {/* Checkered/Grid background for frame effect */}
-                <div className="absolute inset-10 border-2 border-white/10 rounded-full animate-[spin_60s_linear_infinite]" />
+                <div className="absolute inset-4 md:inset-10 border-2 border-white/10 rounded-full animate-[spin_60s_linear_infinite]" />
                 <div className="absolute inset-0 border border-white/5 rounded-full rotate-45" />
 
                 <motion.div
                   animate={{ y: [-10, 10, -10] }}
                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="relative z-10 bg-white/5 backdrop-blur-sm p-8 rounded-[3rem] border border-white/10 shadow-2xl ring-1 ring-white/20"
+                  className="relative z-10 bg-white/5 backdrop-blur-sm p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] border border-white/10 shadow-2xl ring-1 ring-white/20"
                 >
                   <img
                     src={logo3d}
@@ -166,10 +166,10 @@ const Nosotros = () => {
       {/* Naturaleza Institucional */}
       <section className="section-padding bg-background relative overflow-hidden">
         {/* Decorative background elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[100px]" />
+        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-accent/5 rounded-full blur-[100px]" />
 
         <div className="container-custom relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -181,12 +181,12 @@ const Nosotros = () => {
                 <Building2 className="w-4 h-4" />
                 Naturaleza Institucional
               </div>
-              <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-8 leading-tight">
+              <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6 md:mb-8 leading-tight">
                 Formación de excelencia para un{" "}
                 <span className="text-accent font-display italic">mundo global</span>
               </h2>
 
-              <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
+              <div className="space-y-6 text-base md:text-lg text-muted-foreground leading-relaxed">
                 <p>
                   Somos un Centro de Capacitación de Educación Continua dedicado a la
                   formación y actualización permanente de competencias profesionales.
@@ -199,14 +199,14 @@ const Nosotros = () => {
                 </p>
               </div>
 
-              <div className="mt-10 grid grid-cols-2 gap-6">
+              <div className="mt-8 md:mt-10 grid grid-cols-2 gap-4 md:gap-6">
                 <div className="flex items-start gap-3">
                   <div className="p-2 bg-primary/5 rounded-lg text-primary">
                     <CheckCircle className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-foreground">Certificación</h4>
-                    <p className="text-sm text-muted-foreground">Válida a nivel nacional</p>
+                    <h4 className="font-semibold text-foreground text-sm md:text-base">Certificación</h4>
+                    <p className="text-xs md:text-sm text-muted-foreground">Válida a nivel nacional</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -214,8 +214,8 @@ const Nosotros = () => {
                     <Users className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-foreground">Expertos</h4>
-                    <p className="text-sm text-muted-foreground">Docentes calificados</p>
+                    <h4 className="font-semibold text-foreground text-sm md:text-base">Expertos</h4>
+                    <p className="text-xs md:text-sm text-muted-foreground">Docentes calificados</p>
                   </div>
                 </div>
               </div>
@@ -249,25 +249,25 @@ const Nosotros = () => {
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/20 rounded-full blur-[128px]" />
 
         <div className="container-custom relative z-10">
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-12">
             {/* Misión */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               whileHover={{ y: -5 }}
-              className="group relative p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl overflow-hidden"
+              className="group relative p-6 md:p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl overflow-hidden"
             >
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-500">
-                <Target className="w-32 h-32 text-white" />
+                <Target className="w-24 h-24 md:w-32 md:h-32 text-white" />
               </div>
 
               <div className="relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-8 shadow-lg shadow-accent/10">
-                  <Target className="w-8 h-8 text-white" />
+                <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-6 md:mb-8 shadow-lg shadow-accent/10">
+                  <Target className="w-7 h-7 md:w-8 md:h-8 text-white" />
                 </div>
-                <h3 className="text-3xl font-bold text-white mb-6">Misión</h3>
-                <p className="text-white/80 text-lg leading-relaxed">
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 md:mb-6">Misión</h3>
+                <p className="text-white/80 text-base md:text-lg leading-relaxed">
                   Contribuir al desarrollo profesional y humano de nuestros participantes
                   mediante programas de capacitación accesibles, actualizados y de calidad,
                   promoviendo el aprendizaje continuo, la innovación y la mejora del desempeño
@@ -283,18 +283,18 @@ const Nosotros = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
               whileHover={{ y: -5 }}
-              className="group relative p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl overflow-hidden"
+              className="group relative p-6 md:p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl overflow-hidden"
             >
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-500">
-                <Eye className="w-32 h-32 text-white" />
+                <Eye className="w-24 h-24 md:w-32 md:h-32 text-white" />
               </div>
 
               <div className="relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-600 flex items-center justify-center mb-8 shadow-lg shadow-orange-500/20">
-                  <Eye className="w-8 h-8 text-white" />
+                <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-600 flex items-center justify-center mb-6 md:mb-8 shadow-lg shadow-orange-500/20">
+                  <Eye className="w-7 h-7 md:w-8 md:h-8 text-white" />
                 </div>
-                <h3 className="text-3xl font-bold text-white mb-6">Visión</h3>
-                <p className="text-white/80 text-lg leading-relaxed">
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 md:mb-6">Visión</h3>
+                <p className="text-white/80 text-base md:text-lg leading-relaxed">
                   Ser un centro de capacitación líder a nivel nacional e internacional,
                   reconocido por la calidad académica de sus programas, la excelencia
                   de sus docentes, la modalidad flexible de enseñanza virtual y presencial,
@@ -313,7 +313,7 @@ const Nosotros = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-10 md:mb-16"
           >
             <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
               Objetivos <span className="text-accent font-display italic">Institucionales</span>
@@ -321,7 +321,7 @@ const Nosotros = () => {
             <div className="w-24 h-1 bg-accent mx-auto rounded-full" />
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {objectives.map((objective, index) => {
               const IconComponent = objective.icon;
               return (
@@ -331,12 +331,12 @@ const Nosotros = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-card hover:bg-card/50 p-8 rounded-2xl border border-border/50 hover:border-accent/40 hover:shadow-lg transition-all duration-300 group"
+                  className="bg-card hover:bg-card/50 p-6 md:p-8 rounded-2xl border border-border/50 hover:border-accent/40 hover:shadow-lg transition-all duration-300 group"
                 >
-                  <div className="w-14 h-14 rounded-full bg-accent/5 mt-2 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <IconComponent className="w-7 h-7 text-accent group-hover:text-primary transition-colors" />
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-accent/5 mt-2 flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
+                    <IconComponent className="w-6 h-6 md:w-7 md:h-7 text-accent group-hover:text-primary transition-colors" />
                   </div>
-                  <p className="text-foreground/80 leading-relaxed text-lg font-medium">{objective.text}</p>
+                  <p className="text-foreground/80 leading-relaxed text-base md:text-lg font-medium">{objective.text}</p>
                 </motion.div>
               );
             })}
@@ -345,12 +345,12 @@ const Nosotros = () => {
       </section>
 
       {/* Stats Section with Animation */}
-      <section className="py-24 bg-primary text-white relative overflow-hidden">
+      <section className="py-16 md:py-24 bg-primary text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary via-primary/90 to-primary/80 z-0" />
 
         <div className="container-custom relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
@@ -360,10 +360,10 @@ const Nosotros = () => {
                 transition={{ delay: index * 0.1, type: "spring", stiffness: 100 }}
                 className="text-center"
               >
-                <div className="text-5xl md:text-6xl font-bold text-accent mb-4 tracking-tighter">
+                <div className="text-4xl md:text-6xl font-bold text-accent mb-2 md:mb-4 tracking-tighter">
                   <Counter value={stat.value} suffix={stat.suffix} />
                 </div>
-                <div className="text-white/70 text-lg font-medium tracking-wide uppercase">{stat.label}</div>
+                <div className="text-white/70 text-sm md:text-lg font-medium tracking-wide uppercase">{stat.label}</div>
               </motion.div>
             ))}
           </div>

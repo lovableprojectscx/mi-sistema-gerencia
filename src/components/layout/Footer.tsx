@@ -150,8 +150,8 @@ export const Footer = () => {
 
   return (
     <footer className="bg-primary text-white">
-      <div className="container-custom py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
+      <div className="container-custom py-12 md:py-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-10 md:gap-12 lg:gap-8">
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <Link to="/" className="inline-block mb-6">

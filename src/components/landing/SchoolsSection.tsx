@@ -98,12 +98,12 @@ export const SchoolsSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4">
             Nuestras <span className="font-display italic text-accent">Escuelas</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
             Programas especializados organizados por área de conocimiento para
             potenciar tu carrera profesional
           </p>
@@ -115,7 +115,7 @@ export const SchoolsSection = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
         >
           {schoolsConfig.map((school) => {
             const count = getCourseCount(school.categoryKey);
@@ -129,7 +129,7 @@ export const SchoolsSection = () => {
                   <div className={`card-elevated h-full border ${school.borderColor} hover:border-${school.color} transition-all duration-300 relative overflow-hidden flex flex-col`}>
 
                     {/* Image Header */}
-                    <div className="relative h-48 overflow-hidden">
+                    <div className="relative h-40 md:h-48 overflow-hidden">
                       <div className={`absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors z-10`} />
                       <img
                         src={school.image}
@@ -139,17 +139,17 @@ export const SchoolsSection = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="p-8 flex-1 flex flex-col">
-                      <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-accent transition-colors">
+                    <div className="p-6 md:p-8 flex-1 flex flex-col">
+                      <h3 className="text-lg md:text-xl font-bold text-foreground mb-3 group-hover:text-accent transition-colors">
                         {school.name}
                       </h3>
-                      <p className="text-muted-foreground mb-6 leading-relaxed flex-1">
+                      <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed flex-1">
                         {school.description}
                       </p>
 
                       {/* Footer */}
                       <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-xs md:text-sm text-muted-foreground">
                           <span className="font-semibold text-foreground">{count}</span> cursos disponibles
                         </span>
                         <span className="flex items-center text-sm font-medium text-accent group-hover:translate-x-1 transition-transform">

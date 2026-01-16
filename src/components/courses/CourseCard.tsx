@@ -97,7 +97,7 @@ export const CourseCard = ({
           </div>
 
           {/* Content */}
-          <div className="p-5">
+          <div className="p-4 md:p-5">
             {/* School Tag */}
             <div className="mb-3">
               <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${categoryColors[category] || categoryColors.default}`}>
@@ -116,7 +116,7 @@ export const CourseCard = ({
             </p>
 
             {/* Meta info */}
-            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+            <div className="flex items-center gap-4 text-xs md:text-sm text-muted-foreground mb-4">
               <span className="flex items-center gap-1">
                 <Star className="w-4 h-4 fill-gold text-gold" />
                 {rating.toFixed(1)}
@@ -134,11 +134,11 @@ export const CourseCard = ({
             {/* Price */}
             <div className="flex items-center justify-between pt-4 border-t border-border">
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-foreground">
+                <span className="text-xl md:text-2xl font-bold text-foreground">
                   S/{price}
                 </span>
                 {originalPrice && (
-                  <span className="text-sm text-muted-foreground line-through">
+                  <span className="text-xs md:text-sm text-muted-foreground line-through">
                     S/{originalPrice}
                   </span>
                 )}
